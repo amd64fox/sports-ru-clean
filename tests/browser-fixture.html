@@ -1,0 +1,1104 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>Sports.ru Clean fixture</title>
+    <script>
+        window.__sruMetrics = {
+            observerCallbacks: 0,
+            mutationRecords: 0,
+            gmWrites: 0,
+            xhr: 0,
+            beacons: 0,
+            styleBytes: 0,
+            errors: [],
+            calls: {}
+        };
+        window.__syncSruMetrics = () => {
+            for (const [name, value] of Object.entries(window.__sruMetrics)) {
+                document.documentElement.setAttribute(`data-sru-fixture-${name}`, (
+                    value && typeof value === 'object' ? JSON.stringify(value) : String(value)
+                ));
+            }
+        };
+        window.__syncSruMetrics();
+        window.addEventListener('error', (event) => {
+            window.__sruMetrics.errors.push(String(event.error?.stack || event.message));
+            window.__syncSruMetrics();
+        });
+        window.addEventListener('unhandledrejection', (event) => {
+            window.__sruMetrics.errors.push(String(event.reason?.stack || event.reason));
+            window.__syncSruMetrics();
+        });
+        window.__sruStore = new Map();
+        const fixtureParams = new URLSearchParams(location.search);
+        const fixtureHiddenArticles = fixtureParams.has('settings-layout') ? {
+            'sports.ru/football/blogs/long-title.html': {
+                title: 'Как Испании справиться с Месси, а Аргентине – с Испанией? Превью финала ЧМ-2026'
+            },
+            'sports.ru/football/blogs/short-title.html': {
+                title: 'Сколько летали и отдыхали финалисты ЧМ?'
+            }
+        } : {
+            'sports.ru/football/news/example.html': { title: 'Обычная статья' }
+        };
+        if (fixtureParams.has('seed')) {
+            const fixtureAuthor = fixtureParams.has('author');
+            const fixtureCoauthors = [
+                { id: '3014310', name: 'Вадим Лукомский' },
+                { id: '74112501', name: 'Вячеслав Палагин' },
+                { id: '1068241957', name: 'Тимур Боков' }
+            ];
+            const blockedAuthorsMode = fixtureParams.get('blocked-authors');
+            const fixtureBlockedAuthors = blockedAuthorsMode === 'all'
+                ? Object.fromEntries(fixtureCoauthors.map((author) => [author.id, { name: author.name }]))
+                : (blockedAuthorsMode === 'first'
+                    ? { [fixtureCoauthors[0].id]: { name: fixtureCoauthors[0].name } }
+                    : null);
+            window.__sruStore.set('sports-ru-clean-dark-state-v1', {
+                version: 2,
+                theme: fixtureParams.get('theme') === 'light' ? 'light' : 'dark',
+                adBlockingEnabled: fixtureParams.get('ads') !== 'off',
+                hidePromosEnabled: true,
+                analyticsBlockingEnabled: fixtureParams.get('analytics') !== 'off',
+                hiddenTopUrls: fixtureAuthor ? [] : Object.keys(fixtureHiddenArticles),
+                hiddenTopArticles: fixtureAuthor ? {} : fixtureHiddenArticles,
+                blockedTopAuthors: fixtureBlockedAuthors || (fixtureParams.has('blocks')
+                    ? (fixtureParams.has('settings-layout') ? {
+                        41: { name: 'Вадим Лукомский' },
+                        44: { name: 'Ромазан Самодинов' }
+                    } : { 41: { name: 'Top Author' } })
+                    : {}),
+                blockedSiteAuthors: fixtureParams.has('blocks')
+                    ? { 42: { name: 'Site Author' } }
+                    : {},
+                blockedCommentUsers: fixtureParams.has('blocks')
+                    ? { 43: { name: 'Comment Author' } }
+                    : {},
+                authorCache: fixtureAuthor ? {
+                    'sports.ru/football/news/example.html': {
+                        authors: fixtureParams.get('author') === 'multi'
+                            ? fixtureCoauthors
+                            : [{
+                                    id: '1090664296',
+                                    name: 'Иван Ефимов',
+                                    profileUrl: 'https://www.sports.ru/profile/1090664296/'
+                                }],
+                        complete: fixtureParams.get('cache') !== 'incomplete',
+                        ...(fixtureParams.get('cache') === 'stale-scope' ? {} : { authorsVersion: 2 }),
+                        expiresAt: Date.now() + 60_000
+                    }
+                } : {}
+            });
+        }
+        var GM_getValue = (key, fallback) => (
+            window.__sruStore.has(key) ? structuredClone(window.__sruStore.get(key)) : fallback
+        );
+        var GM_setValue = (key, value) => {
+            window.__sruMetrics.gmWrites += 1;
+            window.__sruStore.set(key, structuredClone(value));
+            window.__syncSruMetrics();
+        };
+        var GM_addValueChangeListener = () => 1;
+        var GM_xmlhttpRequest = (options) => {
+            window.__sruMetrics.xhr += 1;
+            window.__syncSruMetrics();
+            if (fixtureParams.get('xhr-authors') === 'multi') {
+                queueMicrotask(() => options.onload?.({
+                    status: 200,
+                    responseText: `
+                        <div class="post-content">
+                            <div class="post-content__header">
+                                <div class="post-authors">
+                                    <div class="post-authors__author">
+                                        <a class="user-info__nick" href="https://www.sports.ru/profile/3014310/">Вадим Лукомский</a>
+                                    </div>
+                                    <div class="post-authors__author">
+                                        <a class="user-info__nick" href="https://www.sports.ru/profile/74112501/">Вячеслав Палагин</a>
+                                    </div>
+                                    <div class="post-authors__author">
+                                        <a class="user-info__nick" href="https://www.sports.ru/profile/1068241957/">Тимур Боков</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="comments-list__items">
+                                <div class="comment-item">
+                                    <a class="user-info__nick" href="https://www.sports.ru/profile/900000001/">ЦСКА 111</a>
+                                </div>
+                                <div class="comment-item">
+                                    <a class="user-info__nick" href="https://www.sports.ru/profile/900000002/">Alexander S</a>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                }));
+                return;
+            }
+            queueMicrotask(() => options.onerror?.());
+        };
+        var GM_addStyle = (css) => {
+            const style = document.createElement('style');
+            style.dataset.sruFixtureStyle = '';
+            style.textContent = css;
+            document.head.append(style);
+            window.__sruMetrics.styleBytes += css.length;
+            window.__syncSruMetrics();
+            return style;
+        };
+        navigator.sendBeacon = () => {
+            window.__sruMetrics.beacons += 1;
+            window.__syncSruMetrics();
+            return true;
+        };
+        var unsafeWindow = window;
+        const NativeMutationObserver = window.MutationObserver;
+        window.MutationObserver = class extends NativeMutationObserver {
+            constructor(callback) {
+                super((records, observer) => {
+                    window.__sruMetrics.observerCallbacks += 1;
+                    window.__sruMetrics.mutationRecords += records.length;
+                    window.__syncSruMetrics();
+                    callback(records, observer);
+                });
+            }
+        };
+    </script>
+    <style>
+        .main-teaser-container--common {
+            background: #ffffff;
+            color: #222222;
+        }
+
+        .fixture-news-layout {
+            background: #ffffff;
+        }
+
+        .main-teaser-container--common .teaser-group__handle,
+        .main-teaser-container--common .teaser-event__board-score {
+            background: #f3f3ef;
+            color: #006496;
+        }
+
+        .main-teaser-container--common .accordion__icon-status {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            background: #ffffff;
+        }
+
+        .main-teaser-container--common .accordion__icon-status::before,
+        .main-teaser-container--common .accordion__icon-status::after {
+            content: "";
+            display: block;
+            width: 2px;
+            height: 10px;
+            background: #222222;
+        }
+
+        .main-teaser-container--common .accordion__title > a {
+            color: #4e4e4e;
+        }
+
+        .main-teaser-container--common .teaser-event,
+        .main-teaser-container--common .teaser-event__board,
+        .main-teaser-container--common .teaser-event__status {
+            background: transparent;
+            color: #222222;
+        }
+
+        .main-teaser-container--common .teaser-event__board-player-name,
+        .main-teaser-container--common .teaser-before-links__item,
+        .main-teaser-container--common .accordion__links > a {
+            color: #006496;
+        }
+
+        .fixture-match-popup {
+            position: absolute;
+            display: none;
+            background: #ffffff;
+            color: #222222;
+            border: 1px solid #d8d8d8;
+        }
+
+        .fixture-match-popup.popup-match_state-loaded {
+            display: block;
+        }
+
+        .fixture-match-popup .popup-match__board-player,
+        .fixture-match-popup .popup-match__board-player-name {
+            color: #006496;
+        }
+
+        .fixture-match-popup .popup-match__board-score {
+            background: #f3f3ef;
+            color: #222222;
+        }
+
+        .fixture-match-popup .popup-match__events-item {
+            border-top: 1px solid #f3f3ef;
+        }
+
+        .fixture-match-popup .popup-match__event:first-child {
+            border-right: 1px solid #d8d8d8;
+        }
+
+        .fixture-match-popup .popup-match__event,
+        .fixture-match-popup .popup-match__event-time,
+        .fixture-match-popup .popup-match__event-text {
+            color: #222222;
+        }
+
+        .fixture-match-popup .popup-match__event a {
+            color: #000000;
+        }
+
+        .fixture-statistics .accordion__handle_dark {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-height: 24px;
+            margin-bottom: 5px;
+            padding: 3px;
+            background-color: #898989;
+            border: 1px solid #898989;
+            color: #ffffff;
+        }
+
+        .fixture-statistics .accordion__title {
+            color: #ffffff;
+        }
+
+        .fixture-statistics .accordion__title > a {
+            color: #4e4e4e;
+        }
+
+        .fixture-statistics .accordion__icon-status {
+            position: relative;
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            background-color: #ffffff;
+            border: 1px solid #ffffff;
+        }
+
+        .fixture-statistics .accordion__icon-status::before,
+        .fixture-statistics .accordion__icon-status::after {
+            position: absolute;
+            top: 6px;
+            left: 2px;
+            width: 10px;
+            height: 2px;
+            background-color: #222222;
+            content: "";
+        }
+
+        .fixture-statistics .accordion__icon-status::after {
+            transform: rotate(90deg);
+        }
+
+        .fixture-profile .info-block {
+            overflow: hidden;
+        }
+
+        .fixture-profile .big-title {
+            min-height: 42px;
+            border-bottom: 1px solid #d8d8d8;
+        }
+
+        .fixture-profile .titleH1 {
+            margin: 0;
+        }
+
+        .fixture-entity .c-tag-header {
+            background-color: #323232;
+        }
+
+        .fixture-entity .profile-table {
+            background-color: transparent;
+            border: 0;
+        }
+
+        .fixture-entity-tabs {
+            background-color: #f3f3ef;
+            border: 1px solid #d8d8d8;
+        }
+
+        .fixture-entity-tabs .tm-item,
+        .fixture-entity-tabs .tm-item.active {
+            background-color: #ffffff;
+            color: #000000;
+            border: 1px solid #d8d8d8;
+        }
+
+        .fixture-entity-tabs .sm {
+            background-color: transparent;
+            color: #006496;
+        }
+
+        .fixture-entity-tabs .sm-act {
+            background-color: #323232;
+            color: #ffffff;
+        }
+
+        .fixture-entity-tabs .arr-down-blk {
+            display: inline-block;
+            border-top: 5px solid #222222;
+            border-right: 4px solid transparent;
+            border-left: 4px solid transparent;
+        }
+
+        .fixture-entity-tabs .c-dropdown__dropdown-menu {
+            display: block;
+            background-color: #ffffff;
+            color: #222222;
+            border: 1px solid #222222;
+        }
+
+        .fixture-entity-tabs .c-dropdown__dropdown-menu > li {
+            background-color: transparent;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .fixture-entity-tabs .c-dropdown__dropdown-menu a {
+            display: block;
+            background-color: transparent;
+            color: #006496;
+        }
+
+        .fixture-feed .blog-posts-list__item {
+            background-color: #ffffff;
+        }
+
+        .fixture-feed .blog-posts-list__top {
+            color: #222222;
+        }
+
+        .fixture-feed .blog-posts-list__top > a {
+            color: #006496;
+        }
+
+        .fixture-feed .btn-show-more {
+            display: block;
+            background-color: #f3f3ef;
+            color: #222222;
+            border: 1px solid #f3f3ef;
+        }
+
+        .fixture-feed .social-links > span {
+            color: #222222;
+        }
+
+        .fixture-personal-feed .gray-more {
+            background-color: #e8e8e0;
+            color: #222222;
+        }
+
+        .fixture-legacy-blog .blog-menu {
+            background: #f3f3ef;
+            color: #222222;
+            border: 1px solid #d8d8d8;
+        }
+
+        .fixture-legacy-blog .blog-menu__item {
+            background: transparent;
+            color: #222222;
+            border-right: 1px solid #d8d8d8;
+        }
+
+        .fixture-legacy-blog .blog-menu__item_state_active {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        .fixture-legacy-blog .blog-menu__link {
+            color: #006496;
+        }
+
+        .fixture-legacy-blog .blog-menu__create-dropdown {
+            background: #ffffff;
+            border: 1px solid #d8d8d8;
+        }
+
+        .fixture-legacy-blog .blog-menu__create-dropdown-link,
+        .fixture-legacy-blog .blog-menu__create-dropdown-text {
+            color: #333333;
+        }
+
+        .fixture-legacy-blog .blog-feed__item {
+            border-bottom: 1px solid #d8d8d8;
+        }
+
+        .fixture-legacy-blog .blog-feed__item-title > .content-link {
+            color: #222222;
+        }
+
+        .fixture-legacy-blog .blog-feed__item-brief,
+        .fixture-legacy-blog .blog-feed__item-figcaption {
+            color: #000000;
+        }
+
+        .fixture-legacy-blog .recent-entries {
+            background: #f6f6f3;
+            border: 1px solid #d8d8d8;
+        }
+
+        .fixture-legacy-blog .recent-entries .link,
+        .fixture-legacy-blog .blog-statistic__post__link {
+            color: #006496;
+        }
+
+        .fixture-legacy-blog .pagination__item_state_active {
+            background: #f3f3ef;
+            border: 1px solid #d8d8d8;
+        }
+
+        .fixture-legacy-blog .pagination__item_state_active .pagination__link {
+            color: #222222;
+        }
+
+        .fixture-legacy-blog .blog-statistic__table__cell,
+        .fixture-legacy-blog .blog-statistic__table__icon {
+            color: #222222;
+            border-bottom: 1px solid #d8d8d8;
+        }
+
+        .fixture-legacy-blog .blog-statistic__table__cell--grey {
+            color: #888888;
+        }
+
+        .fixture-legacy-blog .new-blog,
+        .fixture-legacy-blog .new-blog__line-title {
+            color: #222222;
+        }
+
+        .fixture-legacy-blog .new-blog__line-description {
+            color: #888888;
+        }
+
+        .fixture-legacy-blog .new-blog__textarea {
+            background: #ffffff;
+            color: #222222;
+            border: 1px solid #d8d8d8;
+        }
+
+        .fixture-legacy-blog .image-upload__input__trigger {
+            background: #f3f3ef;
+            color: #222222;
+            border: 1px solid #d8d8d8;
+        }
+
+        .super-top__article {
+            min-height: 180px;
+        }
+
+        body {
+            --ui-content: #222222;
+            --ui-success-bg: #ccf3de;
+            --ui-tertiary-light: #eaeaea;
+        }
+
+        .fixture-match-chat .message--your-message {
+            background: var(--ui-success-bg);
+        }
+
+        .fixture-match-chat .message--your-message:hover {
+            background: var(--ui-tertiary-light);
+        }
+
+        .fixture-match-chat .message-base__text {
+            color: var(--ui-content);
+        }
+
+        .fixture-tournament-tabs .ui-tabbar__side-icon-left--grey {
+            background-image: linear-gradient(
+                270deg,
+                rgba(241, 241, 241, 0) 0%,
+                rgba(241, 241, 241, 0.45) 13.91%,
+                #f1f1f1 54.55%
+            );
+        }
+
+        .fixture-tournament-tabs .ui-tabbar__side-icon-right--grey {
+            background-image: linear-gradient(
+                90deg,
+                rgba(241, 241, 241, 0) 0%,
+                rgba(241, 241, 241, 0.45) 11.59%,
+                #f1f1f1 45.45%
+            );
+        }
+
+        .fixture-tournament-tabs .ui-tabbar__side-icon {
+            width: 44px;
+            height: 32px;
+        }
+
+        .fixture-tag-audit .bread-item__link,
+        .fixture-tag-audit .bread-item__text {
+            color: #222222;
+        }
+
+        .fixture-tag-audit .news-group__item {
+            border-top: 1px solid #ffffff;
+        }
+
+        .fixture-tag-audit .score-cell--losing {
+            background: #ffdada;
+            color: #222222;
+        }
+
+        .fixture-legacy-audit .nl-item {
+            border-top: 1px solid #d8d8d8;
+        }
+
+        .fixture-legacy-audit .tab {
+            background: #ffffff;
+            color: #006496;
+            border: 1px solid #d8d8d8;
+        }
+
+        .fixture-legacy-audit .tab.active {
+            background: #f3f3ef;
+            color: #222222;
+        }
+
+        .fixture-legacy-audit .sort {
+            color: #006496;
+        }
+
+        .fixture-legacy-audit .sort-act > .sort {
+            color: #000000;
+        }
+
+        .fixture-legacy-audit .teaser-event__board-score {
+            background: #f3f3ef;
+            color: #006496;
+        }
+
+        .fixture-legacy-audit .teaser-event__board-score span {
+            color: #222222;
+        }
+
+        .fixture-cabinet .tabs > .tab {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #ffffff;
+            color: #006496;
+            border: 1px solid #b7b7b7;
+        }
+
+        .fixture-cabinet .tabs > .tab.active {
+            background: #f3f3ef;
+            color: #222222;
+        }
+
+        .fixture-cabinet .form-block {
+            border-bottom: 1px solid #d8d8d8;
+        }
+
+        .fixture-cabinet .input-box,
+        .fixture-cabinet .textarea-box {
+            display: inline-block;
+            background: #ffffff;
+            color: #222222;
+            border: 1px solid #b7b7b7;
+        }
+
+        .fixture-cabinet .disabled-input {
+            background: #e8e8e0;
+        }
+
+        .fixture-cabinet .input-box > span {
+            border: 1px solid #e8e8e0;
+        }
+
+        .fixture-cabinet .file-input .but,
+        .fixture-cabinet .change-email__save {
+            display: inline-block;
+            background: #e8e8e0;
+            color: #222222;
+            border: 0;
+        }
+
+        .fixture-cabinet .pink-but {
+            background: #ff003c;
+            color: #ffffff;
+            border: 1px solid #ff003c;
+        }
+
+        .fixture-notifications .personal-notifications__dropdown-arrow,
+        .fixture-notifications .personal-notifications__inner {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        .fixture-notifications .personal-notifications__header,
+        .fixture-notifications .personal-notifications__body,
+        .fixture-notifications .personal-notifications__footer,
+        .fixture-notifications .personal-notifications__list-item {
+            background-color: transparent;
+            color: #000000;
+            border: 1px solid #e5e5e5;
+        }
+
+        .fixture-notifications .personal-notifications__header-tab {
+            background-color: transparent;
+            color: #000000;
+            border: 1px solid transparent;
+        }
+
+        .fixture-notifications .personal-notifications__header-tab--active {
+            background-color: #222222;
+            color: #ffffff;
+        }
+
+        .fixture-notifications .personal-notifications__header-count,
+        .fixture-notifications .personal-notifications__stub-message,
+        .fixture-notifications .personal-notifications__time {
+            color: #7f7f7f;
+        }
+
+        .fixture-notifications .personal-notifications__message,
+        .fixture-notifications .personal-notifications__list-item-body {
+            color: #000000;
+        }
+
+        .fixture-notifications .personal-notifications__message a,
+        .fixture-notifications .personal-notifications__link {
+            color: #006496;
+        }
+
+        .fixture-notifications .personal-notifications__footer-mark-all {
+            background-color: #f4f4f4;
+            color: #000000;
+            border: 1px solid #f4f4f4;
+        }
+
+        .create-content-dropdown {
+            padding: 0;
+            background: #ffffff;
+            color: #222222;
+            border: 1px solid #d8d8d8;
+        }
+
+        .create-content-dropdown .ui-dropdown__list {
+            margin: 0;
+            padding: 0;
+            background: #ffffff;
+        }
+
+        .create-content-dropdown .ui-dropdown__item {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 12px 16px;
+            background: transparent;
+            color: #222222;
+        }
+
+        .create-content-dropdown :where(.ui-dropdown__item-control, svg) {
+            color: #222222;
+        }
+    </style>
+    <script src="/sports-ru-clean-dark.user.js"></script>
+</head>
+<body>
+    <div class="popup-match fixture-match-popup">
+        <a class="popup-match__board" href="/football/match/test/">
+            <div class="popup-match__cell popup-match__board-player">
+                <span class="popup-match__board-player-name">Зенит</span>
+            </div>
+            <div class="popup-match__board-score">1:1</div>
+            <div class="popup-match__cell popup-match__board-player">
+                <span class="popup-match__board-player-name">Спартак</span>
+            </div>
+        </a>
+        <ul class="popup-match__events list-reset">
+            <li class="popup-match__events-item">
+                <div class="popup-match__cell popup-match__event">
+                    <span class="popup-match__event-text"><a href="/football/person/test/">Соболев</a></span>
+                    <span class="popup-match__event-time">90+8</span>
+                </div>
+                <div class="popup-match__cell popup-match__event">
+                    <span class="popup-match__event-time">25</span>
+                    <span class="popup-match__event-text">Мартинс Перейра</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <header class="header">
+        <div class="navigation-aside-block">
+            <button class="native-search">search</button>
+            <button class="native-profile">profile</button>
+            <button class="native-pencil">write</button>
+        </div>
+    </header>
+    <menu class="ui-dropdown create-content-dropdown">
+        <ul class="ui-dropdown__list">
+            <li class="ui-dropdown__item ui-body-sm-medium" tabindex="1">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M4 4H20V17H8L4 20V4Z" fill="currentColor"></path>
+                </svg>
+                <span class="ui-dropdown__item-control ui-body-sm-medium">Пост</span>
+            </li>
+            <li class="ui-dropdown__item ui-body-sm-medium" tabindex="1">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M5 3H19V21H5V3ZM8 7H16V9H8V7ZM8 12H16V14H8V12Z" fill="currentColor"></path>
+                </svg>
+                <span class="ui-dropdown__item-control ui-body-sm-medium">Статья</span>
+            </li>
+        </ul>
+    </menu>
+    <section class="fixture-notifications">
+        <span class="personal-notifications__dropdown-arrow"></span>
+        <div class="personal-notifications-dropdown">
+            <aside class="personal-notifications__inner">
+                <header class="personal-notifications__header">
+                    <div class="personal-notifications__header-tabs">
+                        <button class="personal-notifications__header-tab personal-notifications__header-tab--active" type="button">
+                            Уведомления <span class="personal-notifications__header-count">0</span>
+                        </button>
+                        <button class="personal-notifications__header-tab" type="button">
+                            Письма <span class="personal-notifications__header-count">3</span>
+                        </button>
+                    </div>
+                    <button class="personal-notifications__header-close" type="button">Закрыть</button>
+                </header>
+                <div class="personal-notifications__body">
+                    <div class="personal-notifications__stub">
+                        <span class="personal-notifications__stub-icon"></span>
+                        <span class="personal-notifications__stub-message">Нет новых уведомлений</span>
+                    </div>
+                    <ul class="personal-notifications__list">
+                        <li class="personal-notifications__list-item">
+                            <span class="personal-notifications__avatar"><span class="personal-notifications__avatar-icon"></span></span>
+                            <div class="personal-notifications__list-item-body">
+                                <div class="personal-notifications__message">Вам пришло <a href="#message">письмо</a></div>
+                                <time class="personal-notifications__time">Сегодня, 12:30</time>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <footer class="personal-notifications__footer">
+                    <a class="personal-notifications__link" href="#all-messages">Все письма</a>
+                    <button class="personal-notifications__footer-mark-all ui-button ui-button--default" type="button">Пометить все как прочитанное</button>
+                </footer>
+            </aside>
+        </div>
+    </section>
+    <main>
+        <section class="main-teaser-container main-teaser-container--common">
+            <div class="teaser-before-links">
+                <a class="teaser-before-links__item flex-teaser-item" href="/football/match/">Матч-центр</a>
+            </div>
+            <div class="accordion">
+                <div class="accordion-group teaser-group">
+                    <div class="accordion__handle teaser-group__handle">
+                        <span class="accordion__icon-status"></span>
+                        <span class="accordion__title"><a href="/football/tournament/test/">Тестовый турнир</a></span>
+                        <span class="accordion__links">
+                            <a href="/football/tournament/test/calendar/">календарь</a>
+                            <span class="separator separator_color-gray"></span>
+                            <a href="/football/tournament/test/stat/">статистика</a>
+                        </span>
+                    </div>
+                    <div class="accordion__body">
+                        <ul class="teaser list-reset">
+                            <li class="teaser-event">
+                                <div class="teaser-event__status"><span>19:30</span></div>
+                                <div class="teaser-event__board js-popup-match_handle">
+                                    <div class="teaser-event__board-player">
+                                        <a class="teaser-event__board-player-name" href="/football/match/test/">Ростов</a>
+                                    </div>
+                                    <a class="teaser-event__board-score" href="/football/match/test/"><span>–</span> : <span>–</span></a>
+                                    <div class="teaser-event__board-player">
+                                        <a class="teaser-event__board-player-name" href="/football/match/test/">Зенит</a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="chat-widget fixture-match-chat">
+            <article class="message message--your-message">
+                <a class="message-base__user-name" href="/profile/1025070290/">G</a>
+                <div class="message-base__text">Мой комментарий</div>
+                <time class="message__time">21:52</time>
+            </article>
+        </section>
+        <div class="tag-main-layout__tabbar fixture-tournament-tabs">
+            <nav class="tag-main-layout__tab-bar-container" aria-label="Разделы тега">
+                <menu class="ui-tabbar tag-main-layout__tab-bar">
+                    <a class="ui-tabbar__tab" href="/football/tournament/fifa-world-cup/">Обзор</a>
+                </menu>
+                <div class="ui-tabbar__side-icon ui-tabbar__side-icon-left--grey"></div>
+                <div class="ui-tabbar__side-icon ui-tabbar__side-icon-right--grey"></div>
+            </nav>
+        </div>
+        <section class="tag-page fixture-tag-audit">
+            <nav class="breadcrumbs">
+                <a class="bread-item__link" href="/football/">Футбол</a>
+                <span class="bread-item__text">Лига чемпионов</span>
+            </nav>
+            <ul class="news-group"><li class="news-group__item">Новость турнира</li></ul>
+            <div class="score-cell score-cell--losing">0</div>
+        </section>
+        <section class="news-layout fixture-news-layout">
+            <div class="columns">
+                <main class="columns__main-column"><div class="news-layout__content">Текст новости</div></main>
+                <aside class="columns__alt-column">Главные новости</aside>
+            </div>
+        </section>
+        <section class="pageLayout fixture-legacy-audit">
+            <div class="nl-item">Новость РПЛ</div>
+            <div class="tabs mB20">
+                <a class="tab" href="#form">Форма</a>
+                <a class="tab active" href="#table">Таблица</a>
+            </div>
+            <div><a class="sort" href="#matches">М</a></div>
+            <div class="sort-act"><a class="sort" href="#points">О</a></div>
+            <div class="teaser-event">
+                <a class="teaser-event__board-score" href="/football/match/test/"><span>п</span> 1:1</a>
+            </div>
+        </section>
+        <section class="pageLayout fixture-cabinet">
+            <div class="contentLayout">
+                <div class="box">
+                    <div class="tabs mB15">
+                        <a class="tab active" href="index.html">Профиль</a>
+                        <a class="tab" href="friends.html">Друзья</a>
+                    </div>
+                    <form id="edit_profile">
+                        <div class="form-block">
+                            <span class="input-box disabled-input"><span><input type="text" disabled></span></span>
+                            <span class="input-box"><span><input type="text"></span></span>
+                            <div class="textarea-box"><div class="inner"><textarea></textarea></div></div>
+                            <select><option>Значение</option></select>
+                        </div>
+                        <div class="form-block">
+                            <label class="file-input"><input class="fake" type="file"><span class="but corners-3px">Выбрать файл</span></label>
+                            <button class="change-email__save" type="button">Сохранить</button>
+                        </div>
+                        <input class="pink-but" type="submit" value="Сохранить изменения">
+                    </form>
+                    <form id="edit_cabinet_settings">
+                        <span class="input-box"><span><input type="password"></span></span>
+                    </form>
+                </div>
+            </div>
+        </section>
+        <aside class="gadget fixture-statistics">
+            <div class="gadget__tournament-data">
+                <div class="accordion__handle accordion__handle_dark">
+                    <span class="accordion__icon-status"></span>
+                    <span class="accordion__title"><a href="#table">Таблица</a></span>
+                </div>
+                <div class="accordion__handle accordion__handle_dark">
+                    <span class="accordion__icon-status"></span>
+                    <span class="accordion__title"><a href="#results">Результаты</a></span>
+                </div>
+                <div class="accordion__handle accordion__handle_dark">
+                    <span class="accordion__icon-status"></span>
+                    <span class="accordion__title"><a href="#calendar">Календарь</a></span>
+                </div>
+            </div>
+        </aside>
+        <section class="super-top">
+            <article class="super-top__article">
+                <a class="super-top__link" href="https://www.sports.ru/football/news/example.html">
+                    <span class="super-top__title">Обычная статья</span>
+                </a>
+            </article>
+            <article class="super-top__article">
+                <a class="super-top__link" href="https://www.sports.ru/specials/dinamo-stars/?utm_source=native">
+                    <span class="super-top__title">Спецпроект</span>
+                </a>
+            </article>
+        </section>
+        <article class="post-content fixture-inline-promos">
+            <div class="post-body">
+                <p class="sb-paragraph sb-paragraph--regular fixture-inline-promo-text">
+                    <a href="https://specials.sports.ru/world-cube/start?utm_source=add_native">Розыгрыш набора LEGO</a>
+                </p>
+                <figure class="sb-image fixture-inline-promo-image"><picture><img alt="Рекламный баннер"></picture></figure>
+                <p class="sb-paragraph sb-paragraph--regular fixture-inline-article-link">
+                    <a href="https://www.sports.ru/football/news/example.html">Обычная ссылка в статье</a>
+                </p>
+                <figure class="sb-image fixture-inline-article-image"><picture><img alt="Обычная иллюстрация"></picture></figure>
+            </div>
+        </article>
+        <section class="pageLayout fixture-profile">
+            <div class="info-block">
+                <div class="short-info">
+                    <div class="big-title">
+                        <h1 class="titleH1">Иван Ефимов</h1>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="pageLayout fixture-entity">
+            <div class="c-tag-header">
+                <div class="short-info">
+                    <table class="profile-table"><tbody><tr><td>Рост и вес</td><td>184 | 73</td></tr></tbody></table>
+                </div>
+            </div>
+            <nav class="tabs-menu fixture-entity-tabs">
+                <span class="tm-item active">
+                    Лента <span class="sp">|</span>
+                    <a class="sm sm-act" data-object="filter" data-type="main">Главное</a>
+                    <a class="sm" data-object="filter" data-type="all">Все</a>
+                </span>
+                <div class="tm-item c-dropdown js-active" data-control="Common.Dropdown" tabindex="0">
+                    <a class="c-dropdown__trigger" data-object="trigger">Еще <i class="arr-down-blk"></i></a>
+                    <ul class="c-dropdown__dropdown-menu" data-object="dropdown-menu">
+                        <li><a href="#entity-news">Новости</a></li>
+                        <li><a href="#entity-posts">Записи в блогах</a></li>
+                    </ul>
+                </div>
+            </nav>
+            <table class="fixture-generic-table"><tbody><tr><td>Обычная таблица</td></tr></tbody></table>
+        </section>
+        <section class="page-layout fixture-feed">
+            <div class="super-top fixture-home-marker"></div>
+            <main class="columns-layout__main">
+                <ul class="blog-posts-list">
+                    <li class="blog-posts-list__item">
+                        <span class="blog-posts-list__top">Блог <a href="/tribuna/blogs/example/">Пример блога</a></span>
+                    </li>
+                </ul>
+                <article class="material-list__item fixture-competition" data-article-type="competition">
+                    <a href="https://redirect.appmetrica.yandex.com/serve/966662197017104881?campaign_id=wccontest">Конкурс</a>
+                </article>
+                <article class="material-list__item fixture-sirena-promo" data-article-type="promo">
+                    <a href="https://sirena.world/materialf" rel="nofollow sponsored">Промо Sirena</a>
+                </article>
+                <span class="loader-gray btn btn-show-more" data-control="Common.ShowMore" data-model="Section.Articles" tabindex="0">Показать еще</span>
+                <div class="tabs__panel tabs__panel_active">
+                    <span class="user-feed__show-more loader-gray btn btn-show-more" data-model="Blogs.FeedModel" tabindex="0">Показать еще блоги</span>
+                </div>
+                <aside class="aside-news-block">
+                    <ul class="aside-news-list list-reset aside-news-block__list">
+                        <li class="aside-news-list__item fixture-sponsored-promo" data-control="Common.TopNews">
+                            <span>Промо</span>
+                            <a href="https://redirect.appmetrica.yandex.com/serve/894584392758879728?campaign_id=world_cup" rel="nofollow sponsored">Промо чемпионата мира</a>
+                        </li>
+                    </ul>
+                    <div class="social-links"><span>Новости Спортса в соцсетях и не только</span></div>
+                </aside>
+            </main>
+            <aside class="gadget fixture-home-gadget">
+                <table class="gadget-table"><tbody><tr><td>Домашняя таблица</td></tr></tbody></table>
+            </aside>
+        </section>
+        <section class="pageLayout fixture-personal-feed">
+            <div class="layout-columns second-page">
+                <main class="mainPart columns-layout__main">
+                    <div class="comments-line">
+                        <div class="gray-more mB20"><a href="#personal-more">Показать еще</a></div>
+                    </div>
+                </main>
+            </div>
+        </section>
+        <section class="page-layout fixture-legacy-blog">
+            <ul class="blog-menu list-reset">
+                <li class="blog-menu__item blog-menu__item_state_active">Лента блога</li>
+                <li class="blog-menu__item"><button class="blog-menu__link link link_color_blue" type="button">О блоге и авторах</button></li>
+                <li class="blog-menu__item">
+                    <ul class="blog-menu__create-dropdown">
+                        <li><button class="blog-menu__create-dropdown-link" type="button"><span class="blog-menu__create-dropdown-text">Новая статья</span></button></li>
+                    </ul>
+                </li>
+            </ul>
+            <main class="main-page--blog">
+                <div class="blog-feed">
+                    <article class="blog-feed__item">
+                        <h2 class="blog-feed__item-title">
+                            <a class="h1 content-link" href="/football/blogs/test.html">Заголовок поста</a>
+                        </h2>
+                        <div class="blog-feed__item-brief">
+                            <figure class="blog-feed__item-figure">
+                                <figcaption class="blog-feed__item-figcaption">Краткое описание</figcaption>
+                            </figure>
+                        </div>
+                    </article>
+                </div>
+                <aside class="recent-entries"><a class="link" href="/football/blogs/test.html">Свежая запись</a></aside>
+                <ul class="pagination"><li class="pagination__item_state_active"><a class="pagination__link" href="#page-1">1</a></li></ul>
+                <section class="blog-statistic">
+                    <div class="blog-statistic__table__row">
+                        <div class="blog-statistic__table__cell"><span class="blog-statistic__table__icon">★</span>Просмотры</div>
+                        <div class="blog-statistic__table__cell blog-statistic__table__cell--grey">За месяц</div>
+                    </div>
+                    <a class="blog-statistic__post__link" href="/football/blogs/test.html">Статья</a>
+                </section>
+                <form class="new-blog">
+                    <div class="new-blog__line">
+                        <div class="new-blog__line-title">Название блога</div>
+                        <div class="new-blog__line-description">Краткое пояснение</div>
+                        <textarea class="new-blog__textarea"></textarea>
+                        <button class="image-upload__input__trigger" type="button">Загрузить изображение</button>
+                    </div>
+                </form>
+            </main>
+        </section>
+        <a class="fixture-footer-app-link" href="https://redirect.appmetrica.yandex.com/serve/app?campaign_id=footer-app">Приложение</a>
+        <div class="ad-slot"><span>Реклама</span></div>
+        <section id="dynamic-root"></section>
+        <button id="fixture-add-promo" type="button">add promo</button>
+        <button id="fixture-add-ui" type="button">add ui</button>
+        <button id="fixture-remove-controls" type="button">remove controls</button>
+    </main>
+    <script>
+        document.getElementById('fixture-add-promo').addEventListener('click', () => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'material-list__item fixture-dynamic-promo';
+            wrapper.innerHTML = '<a href="https://www.sports.ru/games/categories/world-cup/?utm_source=native">Игра</a>';
+            document.getElementById('dynamic-root').append(wrapper);
+        });
+        document.getElementById('fixture-add-ui').addEventListener('click', () => {
+            for (let index = 0; index < 20; index += 1) {
+                const marker = document.createElement('span');
+                marker.setAttribute('data-sru-clean-dark-ui', 'fixture-ui');
+                document.getElementById('dynamic-root').append(marker);
+            }
+        });
+        document.getElementById('fixture-remove-controls').addEventListener('click', () => {
+            document.querySelector('.sru-clean-dark-header-controls')?.remove();
+        });
+        const matchPopupHandle = document.querySelector('.js-popup-match_handle');
+        const matchPopup = document.querySelector('.fixture-match-popup');
+        matchPopupHandle.addEventListener('mouseenter', () => matchPopup.classList.add('popup-match_state-loaded'));
+        matchPopupHandle.addEventListener('mouseleave', () => matchPopup.classList.remove('popup-match_state-loaded'));
+        const initialCards = document.querySelectorAll('.super-top__article');
+        document.documentElement.setAttribute(
+            'data-sru-fixture-initial-article-display',
+            getComputedStyle(initialCards[0]).display
+        );
+        document.documentElement.setAttribute(
+            'data-sru-fixture-initial-promo-display',
+            getComputedStyle(initialCards[1]).display
+        );
+        document.documentElement.setAttribute(
+            'data-sru-fixture-initial-ad-display',
+            getComputedStyle(document.querySelector('.ad-slot')).display
+        );
+        document.documentElement.setAttribute(
+            'data-sru-fixture-initial-competition-display',
+            getComputedStyle(document.querySelector('.fixture-competition')).display
+        );
+        document.documentElement.setAttribute(
+            'data-sru-fixture-initial-sirena-promo-display',
+            getComputedStyle(document.querySelector('.fixture-sirena-promo')).display
+        );
+        document.documentElement.setAttribute(
+            'data-sru-fixture-initial-sponsored-promo-display',
+            getComputedStyle(document.querySelector('.fixture-sponsored-promo')).display
+        );
+        document.documentElement.setAttribute(
+            'data-sru-fixture-initial-footer-app-display',
+            getComputedStyle(document.querySelector('.fixture-footer-app-link')).display
+        );
+    </script>
+</body>
+</html>
