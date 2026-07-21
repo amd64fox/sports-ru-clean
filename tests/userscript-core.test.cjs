@@ -118,7 +118,7 @@ function createCoreApi() {
 }
 
 test('metadata and persisted state key remain backward compatible', () => {
-    assert.match(source, /\/\/ @version\s+1\.3\.30/);
+    assert.match(source, /\/\/ @version\s+1\.3\.31/);
     assert.match(source, /const STORAGE_KEY = 'sports-ru-clean-dark-state-v1';/);
     assert.match(source, /version:\s*2/);
     assert.match(source, /^\/\/ @match\s+https:\/\/video\.sports\.ru\/embed\/\*$/m);
@@ -389,13 +389,13 @@ test('state defaults and collection limits remain stable', () => {
     const now = Date.now();
     const cache = Object.fromEntries(Array.from({ length: 201 }, (_, index) => [
         `www.sports.ru/article-${index}.html`,
-        { authors: [], complete: true, authorsVersion: 2, expiresAt: now + 1000 }
+        { authors: [], complete: true, authorsVersion: 3, expiresAt: now + 1000 }
     ]));
     cache['evil.example/article.html'] = {
-        authors: [], complete: true, authorsVersion: 2, expiresAt: now + 1000
+        authors: [], complete: true, authorsVersion: 3, expiresAt: now + 1000
     };
     cache['www.sports.ru'] = {
-        authors: [], complete: true, authorsVersion: 2, expiresAt: now + 1000
+        authors: [], complete: true, authorsVersion: 3, expiresAt: now + 1000
     };
     const normalizedCache = normalizeAuthorCache(cache);
     assert.equal(Object.keys(normalizedCache).length, 200);
@@ -426,10 +426,16 @@ test('author cache invalidates incomplete entries and preserves verified coautho
             complete: true,
             expiresAt
         },
+        'www.sports.ru/football/blogs/stale-authors-version.html': {
+            authors: [],
+            complete: true,
+            authorsVersion: 2,
+            expiresAt
+        },
         'www.sports.ru/football/blogs/single.html': {
             authors: [{ id: 41, name: '  Вадим   Лукомский  ' }],
             complete: true,
-            authorsVersion: 2,
+            authorsVersion: 3,
             expiresAt
         },
         'www.sports.ru/football/blogs/coauthored.html': {
@@ -440,7 +446,7 @@ test('author cache invalidates incomplete entries and preserves verified coautho
                 { id: 'bad', name: 'Ошибка' }
             ],
             complete: true,
-            authorsVersion: 2,
+            authorsVersion: 3,
             expiresAt
         }
     });
@@ -448,6 +454,7 @@ test('author cache invalidates incomplete entries and preserves verified coautho
     assert.equal(normalized['www.sports.ru/football/blogs/legacy.html'], undefined);
     assert.equal(normalized['www.sports.ru/football/blogs/incomplete-array.html'], undefined);
     assert.equal(normalized['www.sports.ru/football/blogs/stale-scope.html'], undefined);
+    assert.equal(normalized['www.sports.ru/football/blogs/stale-authors-version.html'], undefined);
     assert.deepEqual(JSON.parse(JSON.stringify(
         normalized['www.sports.ru/football/blogs/single.html'].authors
     )), [{

@@ -615,6 +615,7 @@ test.before(async () => {
         if (
             pathname === '/tests/browser-fixture.html'
             || pathname === '/profile/1090664296/'
+            || pathname === '/profile/146637949/'
             || pathname === '/cabinet/'
             || pathname === '/cabinet/settings.html'
             || pathname === '/tribuna/blogs/pavle21/'
@@ -2043,6 +2044,121 @@ test('overflow menus stay aligned and author profiles open in a new tab', {
     await lightPage.close();
 });
 
+test('site-wide profile block hides homepage news rail articles and restores them', {
+    skip: playwrightLoadError ? `Playwright unavailable: ${playwrightLoadError.message}` : false
+}, async () => {
+    const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    const storeId = `site-author-home-${Date.now()}`;
+    await page.goto(`${origin}/profile/146637949/?persist-store=${storeId}&xhr-authors=site-news&profile-name=${encodeURIComponent('Максим Федер')}`);
+    await page.waitForTimeout(100);
+
+    await page.click('.sru-clean-dark-profile-menu-button');
+    await page.click('[data-sru-profile-action="site"]');
+    await page.waitForFunction(() => (
+        window.__sruStore.get('sports-ru-clean-dark-state-v1')
+            ?.authorCache?.['sports.ru/hockey/1117307441-panarin.html']?.authors?.[0]?.id === '146637949'
+    ));
+
+    const readNewsState = () => page.evaluate(() => {
+        const blocked = document.querySelector('.fixture-site-author-blocked');
+        const visible = document.querySelector('.fixture-site-author-visible');
+        const topCard = document.querySelector('.fixture-site-author-top');
+        const saved = window.__sruStore.get('sports-ru-clean-dark-state-v1');
+        return {
+            blockedAuthors: Object.keys(saved?.blockedSiteAuthors || {}),
+            blockedMarker: blocked.getAttribute('data-sru-clean-dark-site-author-blocked'),
+            blockedVisible: getComputedStyle(blocked).display !== 'none',
+            visibleMarker: visible.getAttribute('data-sru-clean-dark-site-author-blocked'),
+            visibleVisible: getComputedStyle(visible).display !== 'none',
+            cachedAuthor: saved?.authorCache?.['sports.ru/hockey/1117307441-panarin.html']?.authors?.[0]?.id || null,
+            initialBlockedDisplay: document.documentElement.getAttribute('data-sru-fixture-initial-site-author-display'),
+            initialTopDisplay: document.documentElement.getAttribute('data-sru-fixture-initial-article-display'),
+            topMarker: topCard.getAttribute('data-sru-clean-dark-hidden'),
+            topVisible: getComputedStyle(topCard).display !== 'none',
+            profileChecked: document.querySelector('[data-sru-profile-action="site"]')?.getAttribute('aria-checked') || null
+        };
+    });
+
+    assert.deepEqual(await readNewsState(), {
+        blockedAuthors: ['146637949'],
+        blockedMarker: null,
+        blockedVisible: true,
+        visibleMarker: null,
+        visibleVisible: true,
+        cachedAuthor: '146637949',
+        initialBlockedDisplay: 'list-item',
+        initialTopDisplay: 'block',
+        topMarker: 'false',
+        topVisible: true,
+        profileChecked: 'true'
+    });
+
+    await page.goto(`${origin}/tests/browser-fixture.html?persist-store=${storeId}&xhr-authors=site-news`);
+    await page.waitForFunction(() => (
+        document.querySelector('.fixture-site-author-blocked')
+            ?.getAttribute('data-sru-clean-dark-site-author-blocked') === 'true'
+    ));
+
+    const blockedState = await readNewsState();
+    assert.deepEqual(blockedState, {
+        blockedAuthors: ['146637949'],
+        blockedMarker: 'true',
+        blockedVisible: false,
+        visibleMarker: null,
+        visibleVisible: true,
+        cachedAuthor: '146637949',
+        initialBlockedDisplay: 'none',
+        initialTopDisplay: 'none',
+        topMarker: 'true',
+        topVisible: false,
+        profileChecked: null
+    });
+
+    await page.goto(`${origin}/profile/146637949/?persist-store=${storeId}&xhr-authors=site-news&profile-name=${encodeURIComponent('Максим Федер')}`);
+    await page.waitForTimeout(100);
+    assert.deepEqual(await readNewsState(), {
+        blockedAuthors: ['146637949'],
+        blockedMarker: null,
+        blockedVisible: true,
+        visibleMarker: null,
+        visibleVisible: true,
+        cachedAuthor: '146637949',
+        initialBlockedDisplay: 'list-item',
+        initialTopDisplay: 'block',
+        topMarker: 'false',
+        topVisible: true,
+        profileChecked: 'true'
+    });
+
+    await page.goto(`${origin}/tests/browser-fixture.html?persist-store=${storeId}&xhr-authors=site-news`);
+    await page.waitForFunction(() => (
+        document.querySelector('.fixture-site-author-blocked')
+            ?.getAttribute('data-sru-clean-dark-site-author-blocked') === 'true'
+    ));
+
+    await page.click('.sru-clean-dark-settings-toggle');
+    await page.click('[data-sru-settings-action="unblock-site-author"]');
+    await page.waitForFunction(() => (
+        document.querySelector('.fixture-site-author-blocked')
+            ?.getAttribute('data-sru-clean-dark-site-author-blocked') === null
+    ));
+    assert.deepEqual(await readNewsState(), {
+        blockedAuthors: [],
+        blockedMarker: null,
+        blockedVisible: true,
+        visibleMarker: null,
+        visibleVisible: true,
+        cachedAuthor: '146637949',
+        initialBlockedDisplay: 'none',
+        initialTopDisplay: 'none',
+        topMarker: 'false',
+        topVisible: true,
+        profileChecked: null
+    });
+    assert.deepEqual(JSON.parse((await getRootAttributes(page)).errors), []);
+    await page.close();
+});
+
 test('coauthored stories exclude commenters and hide only after all authors are blocked', {
     skip: playwrightLoadError ? `Playwright unavailable: ${playwrightLoadError.message}` : false
 }, async () => {
@@ -2115,7 +2231,7 @@ test('coauthored stories exclude commenters and hide only after all authors are 
     assert.deepEqual(afterOne, {
         blocked: ['3014310'],
         hiddenUrls: [],
-        cache: { complete: true, authorsVersion: 2, authors: 3 },
+        cache: { complete: true, authorsVersion: 3, authors: 3 },
         hidden: 'false',
         display: 'block'
     });

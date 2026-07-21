@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sports.ru Clean
 // @namespace    https://www.sports.ru/
-// @version      1.3.30
+// @version      1.3.31
 // @description  Cleaner interface for Sports.ru
 // @author       amd64fox
 // @updateURL    https://raw.githubusercontent.com/amd64fox/sports-ru-clean/main/sports-ru-clean-dark.user.js
@@ -28,7 +28,7 @@
     const STORAGE_KEY = 'sports-ru-clean-dark-state-v1';
     const CACHE_TTL = 30 * 24 * 60 * 60 * 1000;
     const NEGATIVE_CACHE_TTL = 6 * 60 * 60 * 1000;
-    const AUTHOR_CACHE_VERSION = 2;
+    const AUTHOR_CACHE_VERSION = 3;
     const MAX_HIDDEN_URLS = 500;
     const MAX_AUTHOR_CACHE = 200;
     const BLOCKED_ANALYTICS_GRAPHQL_OPERATIONS = new Set(['CreateEvent', 'TrackWidget']);
@@ -233,6 +233,7 @@
 
     const SITE_ARTICLE_WRAPPER_SELECTOR = [
         '.material-list__item',
+        '.aside-news-list__item',
         '.document-card-list__item',
         '.document-card',
         '.blog-posts-list__item',
@@ -417,6 +418,12 @@
             }
             return Boolean(state.blockedTopAuthors[author.id] || state.blockedSiteAuthors[author.id]);
         });
+    }
+
+    function isArticleOnOwnAuthorProfile(authors) {
+        const profileId = getProfileIdFromPath();
+        return Boolean(profileId && Array.isArray(authors)
+            && authors.some((author) => author.id === profileId));
     }
 
     function isVideoPlayerContext(value = location.href) {
@@ -1171,7 +1178,9 @@
         const rules = [];
         const urlKeys = new Set(hiddenTopUrls);
         for (const [url, entry] of Object.entries(state.authorCache)) {
-            if (entry.expiresAt > Date.now() && areAllAuthorsBlocked(entry.authors, 'top')) {
+            if (entry.expiresAt > Date.now()
+                && !isArticleOnOwnAuthorProfile(entry.authors)
+                && areAllAuthorsBlocked(entry.authors, 'top')) {
                 urlKeys.add(url);
             }
         }
@@ -1197,7 +1206,9 @@
             `);
         }
 
+        const currentProfileId = getProfileIdFromPath();
         const blockedSiteProfileSelectors = Object.keys(state.blockedSiteAuthors)
+            .filter((profileId) => profileId !== currentProfileId)
             .flatMap(buildProfileHrefSelectors);
         if (blockedSiteProfileSelectors.length > 0) {
             const selectorList = blockedSiteProfileSelectors.join(',');
@@ -1211,7 +1222,9 @@
 
         const blockedSiteUrlKeys = new Set();
         for (const [url, entry] of Object.entries(state.authorCache)) {
-            if (entry.expiresAt > Date.now() && areAllAuthorsBlocked(entry.authors, 'site')) {
+            if (entry.expiresAt > Date.now()
+                && !isArticleOnOwnAuthorProfile(entry.authors)
+                && areAllAuthorsBlocked(entry.authors, 'site')) {
                 blockedSiteUrlKeys.add(url);
             }
         }
@@ -5130,7 +5143,8 @@
             return;
         }
         const hiddenByUrl = hiddenTopUrls.has(meta.url);
-        const hiddenByAuthor = areAllAuthorsBlocked(meta.authors, 'top');
+        const hiddenByAuthor = !isArticleOnOwnAuthorProfile(meta.authors)
+            && areAllAuthorsBlocked(meta.authors, 'top');
         card.setAttribute('data-sru-clean-dark-hidden', String(hiddenByUrl || hiddenByAuthor));
     }
 
@@ -5267,7 +5281,7 @@
 
     function refreshSiteArticleVisibility(wrapper) {
         const meta = siteArticleState.get(wrapper);
-        if (areAllAuthorsBlocked(meta?.authors, 'site')) {
+        if (!isArticleOnOwnAuthorProfile(meta?.authors) && areAllAuthorsBlocked(meta?.authors, 'site')) {
             wrapper.setAttribute(BLOCKED_SITE_ARTICLE_ATTRIBUTE, 'true');
         } else {
             wrapper.removeAttribute(BLOCKED_SITE_ARTICLE_ATTRIBUTE);
@@ -5321,7 +5335,7 @@
             const authors = authorsFromLinks(article.querySelectorAll(
                 ':scope > .post-content__header a.user-info__nick[href*="/profile/"]'
             ));
-            const blocked = areAllAuthorsBlocked(authors, 'site');
+            const blocked = !isArticleOnOwnAuthorProfile(authors) && areAllAuthorsBlocked(authors, 'site');
             if (blocked) {
                 article.setAttribute(BLOCKED_SITE_ARTICLE_ATTRIBUTE, 'true');
                 const notice = ensureBlockedArticleNotice(article, authors);
@@ -5569,8 +5583,8 @@
             }
             const type = Array.isArray(item['@type']) ? item['@type'].join(' ') : item['@type'];
             if (/Article|NewsArticle|BlogPosting/i.test(type || '') && item.author) {
-                const authors = Array.isArray(item.author) ? item.author : [item.author];
-                for (const authorValue of authors) {
+                const authorValues = Array.isArray(item.author) ? item.author : [item.author];
+                for (const authorValue of authorValues) {
                     if (!authorValue || typeof authorValue !== 'object') {
                         continue;
                     }

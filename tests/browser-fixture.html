@@ -30,8 +30,18 @@
             window.__sruMetrics.errors.push(String(event.reason?.stack || event.reason));
             window.__syncSruMetrics();
         });
-        window.__sruStore = new Map();
         const fixtureParams = new URLSearchParams(location.search);
+        const fixtureStoreId = fixtureParams.get('persist-store');
+        const fixtureStoreKey = fixtureStoreId ? `sru-fixture-store:${fixtureStoreId}` : '';
+        let fixtureStoreValue = {};
+        if (fixtureStoreKey) {
+            try {
+                fixtureStoreValue = JSON.parse(sessionStorage.getItem(fixtureStoreKey) || '{}');
+            } catch {
+                fixtureStoreValue = {};
+            }
+        }
+        window.__sruStore = new Map(Object.entries(fixtureStoreValue));
         const fixtureHiddenArticles = fixtureParams.has('settings-layout') ? {
             'sports.ru/football/blogs/long-title.html': {
                 title: 'Как Испании справиться с Месси, а Аргентине – с Испанией? Превью финала ЧМ-2026'
@@ -85,7 +95,7 @@
                                     profileUrl: 'https://www.sports.ru/profile/1090664296/'
                                 }],
                         complete: fixtureParams.get('cache') !== 'incomplete',
-                        ...(fixtureParams.get('cache') === 'stale-scope' ? {} : { authorsVersion: 2 }),
+                        ...(fixtureParams.get('cache') === 'stale-scope' ? {} : { authorsVersion: 3 }),
                         expiresAt: Date.now() + 60_000
                     }
                 } : {}
@@ -97,12 +107,48 @@
         var GM_setValue = (key, value) => {
             window.__sruMetrics.gmWrites += 1;
             window.__sruStore.set(key, structuredClone(value));
+            if (fixtureStoreKey) {
+                sessionStorage.setItem(fixtureStoreKey, JSON.stringify(Object.fromEntries(window.__sruStore)));
+            }
             window.__syncSruMetrics();
         };
         var GM_addValueChangeListener = () => 1;
         var GM_xmlhttpRequest = (options) => {
             window.__sruMetrics.xhr += 1;
             window.__syncSruMetrics();
+            if (fixtureParams.get('xhr-authors') === 'site-news') {
+                const articlePath = new URL(options.url, location.href).pathname;
+                const author = articlePath.endsWith('/hockey/1117307441-panarin.html')
+                    ? { id: '146637949', name: 'Максим Федер' }
+                    : (articlePath.endsWith('/site-visible.html')
+                        ? { id: '42', name: 'Другой автор' }
+                        : null);
+                queueMicrotask(() => {
+                    if (!author) {
+                        options.onerror?.();
+                        return;
+                    }
+                    options.onload?.({
+                        status: 200,
+                        responseText: `
+                            <article class="news-content">
+                                <div class="news-source news-content__source">
+                                    <a class="news-source__value" href="https://www.sports.ru/profile/${author.id}/">${author.name}</a>
+                                </div>
+                            </article>
+                            <script type="application/ld+json">${JSON.stringify({
+                                '@type': 'NewsArticle',
+                                author: {
+                                    '@type': 'Person',
+                                    name: author.name,
+                                    url: `https://www.sports.ru/profile/${author.id}/`
+                                }
+                            })}<\/script>
+                        `
+                    });
+                });
+                return;
+            }
             if (fixtureParams.get('xhr-authors') === 'multi') {
                 queueMicrotask(() => options.onload?.({
                     status: 200,
@@ -980,6 +1026,12 @@
                 </div>
                 <aside class="aside-news-block">
                     <ul class="aside-news-list list-reset aside-news-block__list">
+                        <li class="aside-news-list__item fixture-site-author-blocked">
+                            <a href="https://www.sports.ru/hockey/1117307441-panarin.html">Панарин о воспитании детей</a>
+                        </li>
+                        <li class="aside-news-list__item fixture-site-author-visible">
+                            <a href="https://www.sports.ru/football/news/site-visible.html">Новость другого автора</a>
+                        </li>
                         <li class="aside-news-list__item fixture-sponsored-promo" data-control="Common.TopNews">
                             <span>Промо</span>
                             <a href="https://redirect.appmetrica.yandex.com/serve/894584392758879728?campaign_id=world_cup" rel="nofollow sponsored">Промо чемпионата мира</a>
@@ -1051,6 +1103,15 @@
         <button id="fixture-remove-controls" type="button">remove controls</button>
     </main>
     <script>
+        const fixtureProfileName = fixtureParams.get('profile-name');
+        if (fixtureProfileName) {
+            document.querySelector('.fixture-profile .titleH1').textContent = fixtureProfileName;
+        }
+        if (fixtureParams.get('xhr-authors') === 'site-news') {
+            const siteAuthorTopCard = document.querySelector('.super-top__article');
+            siteAuthorTopCard.classList.add('fixture-site-author-top');
+            siteAuthorTopCard.querySelector('.super-top__link').href = 'https://www.sports.ru/hockey/1117307441-panarin.html';
+        }
         document.getElementById('fixture-add-promo').addEventListener('click', () => {
             const wrapper = document.createElement('div');
             wrapper.className = 'material-list__item fixture-dynamic-promo';
@@ -1075,6 +1136,10 @@
         document.documentElement.setAttribute(
             'data-sru-fixture-initial-article-display',
             getComputedStyle(initialCards[0]).display
+        );
+        document.documentElement.setAttribute(
+            'data-sru-fixture-initial-site-author-display',
+            getComputedStyle(document.querySelector('.fixture-site-author-blocked')).display
         );
         document.documentElement.setAttribute(
             'data-sru-fixture-initial-promo-display',
