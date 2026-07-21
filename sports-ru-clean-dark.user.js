@@ -2189,11 +2189,19 @@
                 color: var(--sru-muted) !important;
             }
 
-            html[${THEME_ATTRIBUTE}="dark"] .tag-page :is(
+            html[${THEME_ATTRIBUTE}="dark"] .tag-layout .tag-header__breadcrumbs :is(
                 .bread-item__link,
                 .bread-item__text
             ) {
                 color: var(--sru-muted) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .tag-layout .tag-header__breadcrumbs .bread-item__link {
+                opacity: 1 !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .tag-layout .tag-header__breadcrumbs .bread-item:last-child .bread-item__text {
+                color: var(--sru-text) !important;
             }
 
             html[${THEME_ATTRIBUTE}="dark"] .tag-page .news-group__item {
@@ -2514,6 +2522,64 @@
                 border-color: var(--sru-border) !important;
             }
 
+            html[${THEME_ATTRIBUTE}="dark"] .page-layout--editors .editor-page .blog-post-header {
+                border-color: var(--sru-border) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .page-layout--editors .editor-page :where(
+                .material-item__header textarea,
+                .blog-feed__item-title textarea,
+                textarea.blog-feed__item-figcaption
+            ) {
+                background-color: transparent !important;
+                color: var(--sru-text) !important;
+                border-color: transparent !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .page-layout--editors .editor-page :where(
+                .preview-item__add,
+                .ui-select__custom-container,
+                .ProseMirror-menuitem__icon
+            ) {
+                background-color: var(--sru-surface-raised) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .page-layout--editors .editor-page :where(
+                .preview-item__add,
+                .ui-select__custom-container,
+                .ProseMirror-menuitem__icon:not(.ProseMirror-menuitem__icon--active)
+            ) {
+                color: var(--sru-text) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .page-layout--editors .editor-page textarea.blog-feed__item-figcaption::placeholder {
+                color: var(--sru-muted) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .page-layout--editors .editor-page .edit-tags__select {
+                --ui-kit-palette-grey-200: var(--sru-surface-raised);
+                --ui-kit-select-color-background: var(--sru-surface-raised);
+                --ui-kit-select-options-item-color-hover: var(--sru-surface-hover);
+                --ui-kit-select-options-selected-color: var(--sru-text);
+                color: var(--sru-text) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .page-layout--editors .editor-page .edit-tags__tags-item {
+                --ui-kit-palette-grey-200: var(--sru-surface-raised);
+                --ui-kit-palette-grey-600: var(--sru-muted);
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .page-layout--editors .editor-page .edit-tags__select-icon {
+                filter: brightness(0) invert(1);
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .page-layout--editors .editor-page :is(
+                .ui-select__arrow,
+                .ui-select__arrow path
+            ) {
+                fill: var(--sru-text) !important;
+            }
+
             html[${THEME_ATTRIBUTE}="dark"] :where(
                 .navigation-navbar-item--current .navigation-navbar-item__link,
                 .navigation-navbar-item--current .navigation-navbar-item__link-text
@@ -2552,15 +2618,87 @@
 
             html[${THEME_ATTRIBUTE}="dark"] .tag-page :where(
                 .tag-table-page__season-select .star-ui-select__value,
-                .tournament-table__td,
+                .tag-calendar-page__season-select .star-ui-select__value,
+                .tag-calendar-page__filter .star-ui-select__value,
                 .news-groups__item.news-group,
                 .post-preview,
-                .message-sender,
-                .section-container.about
+                .message-sender
             ) {
                 background-color: var(--sru-surface-raised) !important;
                 color: var(--sru-text) !important;
                 border-color: var(--sru-border) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .tag-page .tournament-table__td {
+                background-color: var(--sru-surface-raised) !important;
+                color: var(--sru-text) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .tag-page :is(
+                .tournament-table,
+                .tournament-table__td
+            ) {
+                border-color: transparent !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .tag-page .section-container.about {
+                background-color: transparent !important;
+                color: var(--sru-text) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .tag-page :is(
+                .tag-calendar-page__season-select,
+                .tag-calendar-page__filter
+            ) .star-ui-select__name {
+                color: var(--sru-text) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .tag-page :is(
+                .tag-calendar-page__season-select,
+                .tag-calendar-page__filter
+            ) .star-ui-select__arrow {
+                border-right-color: var(--sru-text) !important;
+                border-bottom-color: var(--sru-text) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .tag-page :is(
+                .tag-table-page__season-select,
+                .tag-calendar-page__season-select,
+                .tag-calendar-page__filter
+            ) .dropdown-list__items {
+                background-color: var(--sru-surface-raised) !important;
+                color: var(--sru-text) !important;
+                border-color: var(--sru-border) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .tag-page :is(
+                .tag-table-page__season-select,
+                .tag-calendar-page__season-select,
+                .tag-calendar-page__filter
+            ) :is(
+                .dropdown-list__item,
+                .dropdown-item__name
+            ) {
+                color: var(--sru-text) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .tag-page :is(
+                .tag-table-page__season-select,
+                .tag-calendar-page__season-select,
+                .tag-calendar-page__filter
+            ) .dropdown-list__item:is(
+                :hover,
+                .dropdown-list__item--active
+            ) {
+                background-color: var(--sru-surface-hover) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .tag-page :is(
+                .tag-table-page__season-select,
+                .tag-calendar-page__season-select,
+                .tag-calendar-page__filter
+            ) .dropdown-list__item--selected::after {
+                border-color: var(--sru-text) !important;
             }
 
             html[${THEME_ATTRIBUTE}="dark"] .tag-page :where(
@@ -2627,7 +2765,48 @@
             }
 
             html[${THEME_ATTRIBUTE}="dark"] .tag-page .about__text-inner--blur::after {
-                background: linear-gradient(180deg, rgba(29, 38, 48, 0), var(--sru-surface-raised)) !important;
+                background: linear-gradient(180deg, rgba(34, 34, 34, 0), var(--sru-bg)) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .tag-page .one-message__wrapper:hover {
+                background-color: transparent !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .tag-page .one-message__actions .actions-wrapper {
+                background: linear-gradient(90deg, rgba(34, 34, 34, 0) 2%, var(--sru-bg) 55%) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .tag-page .one-message__actions .actions-item {
+                border-color: var(--sru-border) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .tag-page .one-message__actions .actions-reply svg {
+                fill: var(--sru-muted) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .tag-page .one-message__actions .actions-menu__icon,
+            html[${THEME_ATTRIBUTE}="dark"] .tag-page .one-message__actions .actions-menu__icon::before,
+            html[${THEME_ATTRIBUTE}="dark"] .tag-page .one-message__actions .actions-menu__icon::after {
+                background-color: var(--sru-muted) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .tag-page .actions-menu__list {
+                background-color: var(--sru-surface-raised) !important;
+                color: var(--sru-text) !important;
+                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.45) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .tag-page .actions-menu__list-item {
+                color: var(--sru-text) !important;
+                border-color: var(--sru-border) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .tag-page .actions-menu__list-item:hover {
+                background-color: var(--sru-surface-hover) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .tag-page .actions-menu__list-item:last-child {
+                color: var(--sru-muted) !important;
             }
 
             html[${THEME_ATTRIBUTE}="dark"] .page-layout .columns-layout__right .blogs-block .title-list__item-image {

@@ -340,6 +340,39 @@ function getLegacyBlogStyles(page) {
     });
 }
 
+function getCreatePostStyles(page) {
+    return page.evaluate(() => {
+        const root = document.querySelector('.fixture-create-post');
+        const style = (selector, pseudo) => getComputedStyle(root.querySelector(selector), pseudo);
+        return {
+            headerBorder: style('.blog-post-header').borderTopColor,
+            titleBackground: style('.material-item__header textarea').backgroundColor,
+            titleColor: style('.material-item__header textarea').color,
+            previewTitleBackground: style('.blog-feed__item-title textarea').backgroundColor,
+            announceBackground: style('.blog-feed__item-figcaption').backgroundColor,
+            announcePlaceholder: style('.blog-feed__item-figcaption', '::placeholder').color,
+            toolbarBackground: style('.ProseMirror-menuitem__icon').backgroundColor,
+            toolbarActiveBorder: style('.ProseMirror-menuitem__icon--active').borderTopColor,
+            toolbarActiveBorderWidth: style('.ProseMirror-menuitem__icon--active').borderTopWidth,
+            toolbarActiveIcon: style('.ProseMirror-menuitem__icon--active .icon-button__icon').backgroundColor,
+            toolbarIcon: style('.icon-button__icon').backgroundColor,
+            uploadBackground: style('.preview-item__add').backgroundColor,
+            selectBackground: style('.ui-select__custom-container').backgroundColor,
+            selectPopupBackground: style('.ui-select-options').backgroundColor,
+            selectPopupColor: style('.ui-select-options').color,
+            selectFloatingBackground: style('.ui-select__floating').backgroundColor,
+            selectItemColor: style('.ui-select-options__item').color,
+            selectSelectedBackground: style('.ui-select-options__item--selected').backgroundColor,
+            selectSelectedCheck: style('.ui-select-options__item--selected', '::after').borderRightColor,
+            selectIconFilter: style('.edit-tags__select-icon').filter,
+            selectedTagBackground: style('.edit-tags__tags-item').backgroundColor,
+            selectedTagColor: style('.edit-tags__tags-item').color,
+            selectedTagRemove: style('.edit-tags__remove-item', '::before').backgroundColor,
+            arrow: style('.ui-select__arrow').fill
+        };
+    });
+}
+
 function getTournamentFadeStyles(page) {
     return page.evaluate(() => ({
         left: getComputedStyle(document.querySelector(
@@ -353,6 +386,7 @@ function getTournamentFadeStyles(page) {
 
 function getAuditedLegacyStyles(page) {
     return page.evaluate(() => {
+        const tagLayout = document.querySelector('.fixture-tag-layout');
         const tag = document.querySelector('.fixture-tag-audit');
         const legacy = document.querySelector('.fixture-legacy-audit');
         const inactiveTab = legacy.querySelector('.tab:not(.active)');
@@ -361,8 +395,9 @@ function getAuditedLegacyStyles(page) {
         const score = tag.querySelector('.score-cell--losing');
         const matchScore = legacy.querySelector('.teaser-event__board-score');
         return {
-            breadcrumbLink: getComputedStyle(tag.querySelector('.bread-item__link')).color,
-            breadcrumbText: getComputedStyle(tag.querySelector('.bread-item__text')).color,
+            breadcrumbLink: getComputedStyle(tagLayout.querySelector('.bread-item__link')).color,
+            breadcrumbLinkOpacity: getComputedStyle(tagLayout.querySelector('.bread-item__link')).opacity,
+            breadcrumbText: getComputedStyle(tagLayout.querySelector('.bread-item__text')).color,
             newsBorder: getComputedStyle(tag.querySelector('.news-group__item')).borderTopColor,
             newsListBorder: getComputedStyle(legacy.querySelector('.nl-item')).borderTopColor,
             inactiveTabBackground: getComputedStyle(inactiveTab).backgroundColor,
@@ -374,6 +409,75 @@ function getAuditedLegacyStyles(page) {
             losingScoreBackground: getComputedStyle(score).backgroundColor,
             losingScoreColor: getComputedStyle(score).color,
             penaltyMark: getComputedStyle(matchScore.querySelector('span')).color
+        };
+    });
+}
+
+function getTournamentComponentStyles(page) {
+    return page.evaluate(() => {
+        const root = document.querySelector('.fixture-tag-audit');
+        const style = (selector, pseudo) => getComputedStyle(root.querySelector(selector), pseudo);
+        const tableCell = '.tournament-table__tr:not(.tournament-table__tr--head) .tournament-table__td:not(.tournament-table__td--order)';
+        return {
+            seasonValueBackground: style('.star-ui-select__value').backgroundColor,
+            seasonValueColor: style('.star-ui-select__value').color,
+            seasonValueBorder: style('.star-ui-select__value').borderTopColor,
+            seasonPopupBackground: style('.dropdown-list__items').backgroundColor,
+            seasonPopupColor: style('.dropdown-list__items').color,
+            seasonPopupBorder: style('.dropdown-list__items').borderTopColor,
+            seasonItemColor: style('.dropdown-item__name').color,
+            seasonActiveBackground: style('.dropdown-list__item--active').backgroundColor,
+            seasonSelectedCheck: style('.dropdown-list__item--selected', '::after').borderRightColor,
+            aboutBackground: style('.section-container.about').backgroundColor,
+            aboutColor: style('.section-container.about').color,
+            aboutFade: style('.about__text-inner--blur', '::after').backgroundImage,
+            tableBackground: style(tableCell).backgroundColor,
+            tableBorder: style('.tournament-table').borderBottomColor,
+            tableCellBorder: style(tableCell).borderBottomColor,
+            tableCellBorderWidth: style(tableCell).borderBottomWidth,
+            commentHoverBackground: style('.one-message__wrapper').backgroundColor,
+            commentActionsGradient: style('.actions-wrapper').backgroundImage,
+            commentActionBorder: style('.actions-item').borderTopColor,
+            commentReplyIcon: style('.actions-reply svg').fill,
+            commentMenuIcon: style('.actions-menu__icon').backgroundColor,
+            commentMenuIconBefore: style('.actions-menu__icon', '::before').backgroundColor,
+            commentMenuIconAfter: style('.actions-menu__icon', '::after').backgroundColor,
+            commentMenuBackground: style('.actions-menu__list').backgroundColor,
+            commentMenuColor: style('.actions-menu__list').color,
+            commentMenuShadow: style('.actions-menu__list').boxShadow,
+            commentMenuItemColor: style('.actions-menu__list-item').color,
+            commentMenuItemBackground: style('.actions-menu__list-item').backgroundColor,
+            commentMenuLastColor: style('.actions-menu__list-item:last-child').color,
+            commentMenuLastBorder: style('.actions-menu__list-item:last-child').borderTopColor
+        };
+    });
+}
+
+function getCalendarSelectStyles(page) {
+    return page.evaluate(() => {
+        const root = document.querySelector('.fixture-calendar-audit');
+        const style = (selector, pseudo) => getComputedStyle(root.querySelector(selector), pseudo);
+        const season = '.tag-calendar-page__season-select';
+        const filter = '.tag-calendar-page__filter';
+        return {
+            seasonValueBackground: style(`${season} .star-ui-select__value`).backgroundColor,
+            seasonValueColor: style(`${season} .star-ui-select__value`).color,
+            seasonValueBorder: style(`${season} .star-ui-select__value`).borderTopColor,
+            seasonNameColor: style(`${season} .star-ui-select__name`).color,
+            filterValueBackground: style(`${filter} .star-ui-select__value`).backgroundColor,
+            filterValueColor: style(`${filter} .star-ui-select__value`).color,
+            filterValueBorder: style(`${filter} .star-ui-select__value`).borderTopColor,
+            filterNameColor: style(`${filter} .star-ui-select__name`).color,
+            arrowRight: style(`${season} .star-ui-select__arrow`).borderRightColor,
+            arrowBottom: style(`${season} .star-ui-select__arrow`).borderBottomColor,
+            filterArrowRight: style(`${filter} .star-ui-select__arrow`).borderRightColor,
+            filterArrowBottom: style(`${filter} .star-ui-select__arrow`).borderBottomColor,
+            popupBackground: style('.dropdown-list__items').backgroundColor,
+            popupColor: style('.dropdown-list__items').color,
+            popupBorder: style('.dropdown-list__items').borderTopColor,
+            itemColor: style('.dropdown-item__name').color,
+            activeBackground: style('.dropdown-list__item--active').backgroundColor,
+            selectedCheck: style('.dropdown-list__item--selected', '::after').borderRightColor
         };
     });
 }
@@ -619,6 +723,7 @@ test.before(async () => {
             || pathname === '/cabinet/'
             || pathname === '/cabinet/settings.html'
             || pathname === '/tribuna/blogs/pavle21/'
+            || pathname === '/tribuna/create-post/'
         ) {
             response.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
             response.end(fixture);
@@ -752,7 +857,7 @@ test('full userscript handles initial and dynamic DOM without self-scan loops', 
     const initialRoot = await getRootAttributes(page);
 
     assert.deepEqual(JSON.parse(initialRoot.errors), []);
-    assert.equal(initialRoot.styleBytes, 127181);
+    assert.equal(initialRoot.styleBytes, 135095);
     assert.equal(initialRoot.initialArticleDisplay, 'block');
     assert.equal(initialRoot.initialPromoDisplay, 'none');
     assert.equal(initialRoot.initialAdDisplay, 'none');
@@ -1300,6 +1405,72 @@ test('legacy Tribuna blog menu and feed stay readable in both themes', {
     await lightPage.close();
 });
 
+test('Tribuna create-post controls match dark and light surfaces', {
+    skip: playwrightLoadError ? `Playwright unavailable: ${playwrightLoadError.message}` : false
+}, async () => {
+    const darkPage = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    await darkPage.goto(`${origin}/tribuna/create-post/?seed=1&theme=dark`);
+    await darkPage.waitForTimeout(100);
+    assert.deepEqual(await getCreatePostStyles(darkPage), {
+        headerBorder: 'rgb(80, 80, 80)',
+        titleBackground: 'rgba(0, 0, 0, 0)',
+        titleColor: 'rgb(216, 216, 216)',
+        previewTitleBackground: 'rgba(0, 0, 0, 0)',
+        announceBackground: 'rgba(0, 0, 0, 0)',
+        announcePlaceholder: 'rgb(155, 155, 155)',
+        toolbarBackground: 'rgb(55, 55, 55)',
+        toolbarActiveBorder: 'rgb(0, 168, 118)',
+        toolbarActiveBorderWidth: '2px',
+        toolbarActiveIcon: 'rgb(0, 168, 118)',
+        toolbarIcon: 'rgb(216, 216, 216)',
+        uploadBackground: 'rgb(55, 55, 55)',
+        selectBackground: 'rgb(55, 55, 55)',
+        selectPopupBackground: 'rgb(55, 55, 55)',
+        selectPopupColor: 'rgb(216, 216, 216)',
+        selectFloatingBackground: 'rgb(55, 55, 55)',
+        selectItemColor: 'rgb(216, 216, 216)',
+        selectSelectedBackground: 'rgb(80, 80, 80)',
+        selectSelectedCheck: 'rgb(216, 216, 216)',
+        selectIconFilter: 'brightness(0) invert(1)',
+        selectedTagBackground: 'rgb(55, 55, 55)',
+        selectedTagColor: 'rgb(216, 216, 216)',
+        selectedTagRemove: 'rgb(155, 155, 155)',
+        arrow: 'rgb(216, 216, 216)'
+    });
+    await darkPage.close();
+
+    const lightPage = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    await lightPage.goto(`${origin}/tribuna/create-post/?seed=1&theme=light`);
+    await lightPage.waitForTimeout(100);
+    assert.deepEqual(await getCreatePostStyles(lightPage), {
+        headerBorder: 'rgb(216, 216, 216)',
+        titleBackground: 'rgba(0, 0, 0, 0)',
+        titleColor: 'rgb(34, 34, 34)',
+        previewTitleBackground: 'rgba(0, 0, 0, 0)',
+        announceBackground: 'rgba(0, 0, 0, 0)',
+        announcePlaceholder: 'rgb(117, 117, 117)',
+        toolbarBackground: 'rgb(244, 244, 244)',
+        toolbarActiveBorder: 'rgb(0, 168, 118)',
+        toolbarActiveBorderWidth: '2px',
+        toolbarActiveIcon: 'rgb(0, 168, 118)',
+        toolbarIcon: 'rgb(34, 34, 34)',
+        uploadBackground: 'rgb(244, 244, 244)',
+        selectBackground: 'rgb(244, 244, 244)',
+        selectPopupBackground: 'rgb(244, 244, 244)',
+        selectPopupColor: 'rgb(34, 34, 34)',
+        selectFloatingBackground: 'rgb(255, 255, 255)',
+        selectItemColor: 'rgb(34, 34, 34)',
+        selectSelectedBackground: 'rgb(244, 244, 244)',
+        selectSelectedCheck: 'rgb(34, 34, 34)',
+        selectIconFilter: 'none',
+        selectedTagBackground: 'rgb(244, 244, 244)',
+        selectedTagColor: 'rgb(34, 34, 34)',
+        selectedTagRemove: 'rgb(127, 127, 127)',
+        arrow: 'rgb(0, 0, 0)'
+    });
+    await lightPage.close();
+});
+
 test('own match-chat messages stay readable in dark and light themes', {
     skip: playwrightLoadError ? `Playwright unavailable: ${playwrightLoadError.message}` : false
 }, async () => {
@@ -1406,7 +1577,8 @@ test('audited legacy tournament and news controls keep readable theme colors', {
     await darkPage.waitForTimeout(100);
     assert.deepEqual(await getAuditedLegacyStyles(darkPage), {
         breadcrumbLink: 'rgb(155, 155, 155)',
-        breadcrumbText: 'rgb(155, 155, 155)',
+        breadcrumbLinkOpacity: '1',
+        breadcrumbText: 'rgb(216, 216, 216)',
         newsBorder: 'rgb(80, 80, 80)',
         newsListBorder: 'rgb(80, 80, 80)',
         inactiveTabBackground: 'rgb(44, 44, 44)',
@@ -1426,6 +1598,7 @@ test('audited legacy tournament and news controls keep readable theme colors', {
     await lightPage.waitForTimeout(100);
     assert.deepEqual(await getAuditedLegacyStyles(lightPage), {
         breadcrumbLink: 'rgb(34, 34, 34)',
+        breadcrumbLinkOpacity: '0.6',
         breadcrumbText: 'rgb(34, 34, 34)',
         newsBorder: 'rgb(255, 255, 255)',
         newsListBorder: 'rgb(216, 216, 216)',
@@ -1438,6 +1611,152 @@ test('audited legacy tournament and news controls keep readable theme colors', {
         losingScoreBackground: 'rgb(255, 218, 218)',
         losingScoreColor: 'rgb(34, 34, 34)',
         penaltyMark: 'rgb(34, 34, 34)'
+    });
+    await lightPage.close();
+});
+
+test('tournament page surfaces and comment actions follow the selected theme', {
+    skip: playwrightLoadError ? `Playwright unavailable: ${playwrightLoadError.message}` : false
+}, async () => {
+    const darkPage = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    await darkPage.goto(`${origin}/tests/browser-fixture.html?seed=1&theme=dark`);
+    await darkPage.hover('.fixture-tag-audit .actions-menu__list-item');
+    const {
+        aboutFade: darkAboutFade,
+        commentActionsGradient: darkCommentActionsGradient,
+        commentMenuShadow: darkCommentMenuShadow,
+        ...darkStyles
+    } = await getTournamentComponentStyles(darkPage);
+    assert.deepEqual(darkStyles, {
+        seasonValueBackground: 'rgb(55, 55, 55)',
+        seasonValueColor: 'rgb(216, 216, 216)',
+        seasonValueBorder: 'rgb(80, 80, 80)',
+        seasonPopupBackground: 'rgb(55, 55, 55)',
+        seasonPopupColor: 'rgb(216, 216, 216)',
+        seasonPopupBorder: 'rgb(80, 80, 80)',
+        seasonItemColor: 'rgb(216, 216, 216)',
+        seasonActiveBackground: 'rgb(80, 80, 80)',
+        seasonSelectedCheck: 'rgb(216, 216, 216)',
+        aboutBackground: 'rgba(0, 0, 0, 0)',
+        aboutColor: 'rgb(216, 216, 216)',
+        tableBackground: 'rgb(55, 55, 55)',
+        tableBorder: 'rgba(0, 0, 0, 0)',
+        tableCellBorder: 'rgba(0, 0, 0, 0)',
+        tableCellBorderWidth: '2px',
+        commentHoverBackground: 'rgba(0, 0, 0, 0)',
+        commentActionBorder: 'rgb(80, 80, 80)',
+        commentReplyIcon: 'rgb(155, 155, 155)',
+        commentMenuIcon: 'rgb(155, 155, 155)',
+        commentMenuIconBefore: 'rgb(155, 155, 155)',
+        commentMenuIconAfter: 'rgb(155, 155, 155)',
+        commentMenuBackground: 'rgb(55, 55, 55)',
+        commentMenuColor: 'rgb(216, 216, 216)',
+        commentMenuItemColor: 'rgb(216, 216, 216)',
+        commentMenuItemBackground: 'rgb(80, 80, 80)',
+        commentMenuLastColor: 'rgb(155, 155, 155)',
+        commentMenuLastBorder: 'rgb(80, 80, 80)'
+    });
+    assert.match(darkAboutFade, /rgb\(34, 34, 34\)/);
+    assert.doesNotMatch(darkAboutFade, /rgb\(55, 55, 55\)/);
+    assert.match(darkCommentActionsGradient, /rgb\(34, 34, 34\)/);
+    assert.doesNotMatch(darkCommentActionsGradient, /rgb\(244, 244, 244\)/);
+    assert.match(darkCommentMenuShadow, /rgba\(0, 0, 0, 0\.45\)/);
+    await darkPage.close();
+
+    const lightPage = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    await lightPage.goto(`${origin}/tests/browser-fixture.html?seed=1&theme=light`);
+    await lightPage.hover('.fixture-tag-audit .actions-menu__list-item');
+    const {
+        aboutFade: lightAboutFade,
+        commentActionsGradient: lightCommentActionsGradient,
+        commentMenuShadow: lightCommentMenuShadow,
+        ...lightStyles
+    } = await getTournamentComponentStyles(lightPage);
+    assert.deepEqual(lightStyles, {
+        seasonValueBackground: 'rgb(255, 255, 255)',
+        seasonValueColor: 'rgb(34, 34, 34)',
+        seasonValueBorder: 'rgb(236, 236, 234)',
+        seasonPopupBackground: 'rgb(244, 244, 244)',
+        seasonPopupColor: 'rgb(34, 34, 34)',
+        seasonPopupBorder: 'rgb(216, 216, 216)',
+        seasonItemColor: 'rgb(34, 34, 34)',
+        seasonActiveBackground: 'rgb(242, 242, 240)',
+        seasonSelectedCheck: 'rgb(34, 34, 34)',
+        aboutBackground: 'rgb(255, 255, 255)',
+        aboutColor: 'rgb(34, 34, 34)',
+        tableBackground: 'rgb(244, 244, 244)',
+        tableBorder: 'rgb(244, 244, 244)',
+        tableCellBorder: 'rgba(0, 0, 0, 0)',
+        tableCellBorderWidth: '2px',
+        commentHoverBackground: 'rgb(249, 249, 246)',
+        commentActionBorder: 'rgb(224, 224, 222)',
+        commentReplyIcon: 'rgb(127, 127, 127)',
+        commentMenuIcon: 'rgb(34, 34, 34)',
+        commentMenuIconBefore: 'rgb(34, 34, 34)',
+        commentMenuIconAfter: 'rgb(34, 34, 34)',
+        commentMenuBackground: 'rgb(255, 255, 255)',
+        commentMenuColor: 'rgb(34, 34, 34)',
+        commentMenuItemColor: 'rgb(34, 34, 34)',
+        commentMenuItemBackground: 'rgb(242, 242, 240)',
+        commentMenuLastColor: 'rgb(117, 117, 117)',
+        commentMenuLastBorder: 'rgb(224, 224, 222)'
+    });
+    assert.match(lightAboutFade, /rgb\(255, 255, 255\)/);
+    assert.match(lightCommentActionsGradient, /rgb\(244, 244, 244\)/);
+    assert.match(lightCommentMenuShadow, /rgb\(213, 213, 213\)/);
+    await lightPage.close();
+});
+
+test('calendar schedule selects follow the selected theme', {
+    skip: playwrightLoadError ? `Playwright unavailable: ${playwrightLoadError.message}` : false
+}, async () => {
+    const darkPage = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    await darkPage.goto(`${origin}/tests/browser-fixture.html?seed=1&theme=dark`);
+    await darkPage.waitForTimeout(100);
+    assert.deepEqual(await getCalendarSelectStyles(darkPage), {
+        seasonValueBackground: 'rgb(55, 55, 55)',
+        seasonValueColor: 'rgb(216, 216, 216)',
+        seasonValueBorder: 'rgb(80, 80, 80)',
+        seasonNameColor: 'rgb(216, 216, 216)',
+        filterValueBackground: 'rgb(55, 55, 55)',
+        filterValueColor: 'rgb(216, 216, 216)',
+        filterValueBorder: 'rgb(80, 80, 80)',
+        filterNameColor: 'rgb(216, 216, 216)',
+        arrowRight: 'rgb(216, 216, 216)',
+        arrowBottom: 'rgb(216, 216, 216)',
+        filterArrowRight: 'rgb(216, 216, 216)',
+        filterArrowBottom: 'rgb(216, 216, 216)',
+        popupBackground: 'rgb(55, 55, 55)',
+        popupColor: 'rgb(216, 216, 216)',
+        popupBorder: 'rgb(80, 80, 80)',
+        itemColor: 'rgb(216, 216, 216)',
+        activeBackground: 'rgb(80, 80, 80)',
+        selectedCheck: 'rgb(216, 216, 216)'
+    });
+    await darkPage.close();
+
+    const lightPage = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    await lightPage.goto(`${origin}/tests/browser-fixture.html?seed=1&theme=light`);
+    await lightPage.waitForTimeout(100);
+    assert.deepEqual(await getCalendarSelectStyles(lightPage), {
+        seasonValueBackground: 'rgb(255, 255, 255)',
+        seasonValueColor: 'rgb(34, 34, 34)',
+        seasonValueBorder: 'rgb(236, 236, 234)',
+        seasonNameColor: 'rgb(34, 34, 34)',
+        filterValueBackground: 'rgb(255, 255, 255)',
+        filterValueColor: 'rgb(34, 34, 34)',
+        filterValueBorder: 'rgb(236, 236, 234)',
+        filterNameColor: 'rgb(34, 34, 34)',
+        arrowRight: 'rgb(34, 34, 34)',
+        arrowBottom: 'rgb(34, 34, 34)',
+        filterArrowRight: 'rgb(34, 34, 34)',
+        filterArrowBottom: 'rgb(34, 34, 34)',
+        popupBackground: 'rgb(244, 244, 244)',
+        popupColor: 'rgb(34, 34, 34)',
+        popupBorder: 'rgb(216, 216, 216)',
+        itemColor: 'rgb(34, 34, 34)',
+        activeBackground: 'rgb(242, 242, 240)',
+        selectedCheck: 'rgb(34, 34, 34)'
     });
     await lightPage.close();
 });
