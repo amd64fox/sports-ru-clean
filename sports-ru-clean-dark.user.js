@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sports.ru Clean
 // @namespace    https://www.sports.ru/
-// @version      1.3.31
+// @version      1.3.32
 // @description  Cleaner interface for Sports.ru
 // @author       amd64fox
 // @updateURL    https://raw.githubusercontent.com/amd64fox/sports-ru-clean/main/sports-ru-clean-dark.user.js

@@ -118,7 +118,7 @@ function createCoreApi() {
 }
 
 test('metadata and persisted state key remain backward compatible', () => {
-    assert.match(source, /\/\/ @version\s+1\.3\.31/);
+    assert.match(source, /\/\/ @version\s+1\.3\.32/);
     assert.match(source, /const STORAGE_KEY = 'sports-ru-clean-dark-state-v1';/);
     assert.match(source, /version:\s*2/);
     assert.match(source, /^\/\/ @match\s+https:\/\/video\.sports\.ru\/embed\/\*$/m);
