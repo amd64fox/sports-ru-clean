@@ -788,6 +788,7 @@
     <main>
         <section class="main-teaser-container main-teaser-container--common">
             <div class="teaser-before-links">
+                <span class="teaser-before-links__adv-label">Реклама 18+</span>
                 <a class="teaser-before-links__item flex-teaser-item" href="/football/match/">Матч-центр</a>
             </div>
             <div class="accordion">
@@ -1082,6 +1083,10 @@
         document.documentElement.setAttribute(
             'data-sru-fixture-initial-ad-display',
             getComputedStyle(document.querySelector('.ad-slot')).display
+        );
+        document.documentElement.setAttribute(
+            'data-sru-fixture-initial-ad-label-display',
+            getComputedStyle(document.querySelector('.teaser-before-links__adv-label')).display
         );
         document.documentElement.setAttribute(
             'data-sru-fixture-initial-competition-display',

@@ -118,7 +118,7 @@ function createCoreApi() {
 }
 
 test('metadata and persisted state key remain backward compatible', () => {
-    assert.match(source, /\/\/ @version\s+1\.3\.29/);
+    assert.match(source, /\/\/ @version\s+1\.3\.30/);
     assert.match(source, /const STORAGE_KEY = 'sports-ru-clean-dark-state-v1';/);
     assert.match(source, /version:\s*2/);
     assert.match(source, /^\/\/ @match\s+https:\/\/video\.sports\.ru\/embed\/\*$/m);
@@ -475,7 +475,7 @@ test('ad wrapper selectors stay a strict subset of all ad selectors', () => {
     const all = new Set(extractSelectorArray('AD_NODE_SELECTOR'));
     const wrappers = extractSelectorArray('KNOWN_AD_WRAPPER_SELECTOR');
 
-    assert.equal(all.size, 66);
+    assert.equal(all.size, 67);
     assert.equal(new Set(wrappers).size, 33);
     assert.ok(wrappers.every((selector) => all.has(selector)));
 });
@@ -640,6 +640,6 @@ test('generated CSS is byte-for-byte identical to the audited baseline', () => {
     const css = buildStyles();
     const hash = crypto.createHash('sha256').update(css).digest('hex');
 
-    assert.equal(css.length, 127149);
-    assert.equal(hash, 'b7b2740d43d7ea87006ee5a252f01b10547cafd043fa30e040f57b6f6c5b3d2c');
+    assert.equal(css.length, 127181);
+    assert.equal(hash, '593d881f9bd66e24df3f604671f6408ca6772b1d3bf2e14c8ea0bcb7bf619d85');
 });

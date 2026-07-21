@@ -157,6 +157,7 @@ function getRootAttributes(page) {
             initialArticleDisplay: root.getAttribute('data-sru-fixture-initial-article-display'),
             initialPromoDisplay: root.getAttribute('data-sru-fixture-initial-promo-display'),
             initialAdDisplay: root.getAttribute('data-sru-fixture-initial-ad-display'),
+            initialAdLabelDisplay: root.getAttribute('data-sru-fixture-initial-ad-label-display'),
             initialCompetitionDisplay: root.getAttribute('data-sru-fixture-initial-competition-display'),
             initialSirenaPromoDisplay: root.getAttribute('data-sru-fixture-initial-sirena-promo-display'),
             initialSponsoredPromoDisplay: root.getAttribute('data-sru-fixture-initial-sponsored-promo-display'),
@@ -655,6 +656,8 @@ test('full userscript handles initial and dynamic DOM without self-scan loops', 
     const initial = await page.evaluate(() => {
         const cards = document.querySelectorAll('.super-top__article');
         const ad = document.querySelector('.ad-slot');
+        const adLabel = document.querySelector('.teaser-before-links__adv-label');
+        const matchCenterLink = document.querySelector('.teaser-before-links__item');
         const sponsoredPromo = document.querySelector('.fixture-sponsored-promo');
         const sirenaPromo = document.querySelector('.fixture-sirena-promo');
         const inlinePromoText = document.querySelector('.fixture-inline-promo-text');
@@ -682,6 +685,9 @@ test('full userscript handles initial and dynamic DOM without self-scan loops', 
             promoMenus: cards[1].querySelectorAll('.sru-clean-dark-card-menu-button').length,
             adDisplay: getComputedStyle(ad).display,
             adHidden: ad.getAttribute('aria-hidden'),
+            adLabelDisplay: getComputedStyle(adLabel).display,
+            adLabelHidden: adLabel.getAttribute('aria-hidden'),
+            matchCenterDisplay: getComputedStyle(matchCenterLink).display,
             sponsoredPromoDisplay: getComputedStyle(sponsoredPromo).display,
             sponsoredPromoMarker: sponsoredPromo.getAttribute('data-sru-clean-dark-promo'),
             sponsoredPromoHidden: sponsoredPromo.getAttribute('aria-hidden'),
@@ -745,10 +751,11 @@ test('full userscript handles initial and dynamic DOM without self-scan loops', 
     const initialRoot = await getRootAttributes(page);
 
     assert.deepEqual(JSON.parse(initialRoot.errors), []);
-    assert.equal(initialRoot.styleBytes, 127149);
+    assert.equal(initialRoot.styleBytes, 127181);
     assert.equal(initialRoot.initialArticleDisplay, 'block');
     assert.equal(initialRoot.initialPromoDisplay, 'none');
     assert.equal(initialRoot.initialAdDisplay, 'none');
+    assert.equal(initialRoot.initialAdLabelDisplay, 'none');
     assert.equal(initialRoot.initialCompetitionDisplay, 'none');
     assert.equal(initialRoot.initialSirenaPromoDisplay, 'none');
     assert.equal(initialRoot.initialSponsoredPromoDisplay, 'none');
@@ -765,6 +772,9 @@ test('full userscript handles initial and dynamic DOM without self-scan loops', 
         promoMenus: 0,
         adDisplay: 'none',
         adHidden: 'true',
+        adLabelDisplay: 'none',
+        adLabelHidden: 'true',
+        matchCenterDisplay: 'inline',
         sponsoredPromoDisplay: 'none',
         sponsoredPromoMarker: 'true',
         sponsoredPromoHidden: 'true',
@@ -2204,6 +2214,8 @@ test('persisted filters prepaint before the first observer scan and settings rer
             article: getComputedStyle(cards[0]).display,
             promo: getComputedStyle(cards[1]).display,
             ad: getComputedStyle(document.querySelector('.ad-slot')).display,
+            adLabel: getComputedStyle(document.querySelector('.teaser-before-links__adv-label')).display,
+            matchCenter: getComputedStyle(document.querySelector('.teaser-before-links__item')).display,
             visibleCount: document.querySelector('.super-top')?.getAttribute('data-sru-clean-dark-visible-count'),
             matchHeaderBackground: getComputedStyle(matchRoot.querySelector('.teaser-group__handle')).backgroundColor,
             matchIconBackground: getComputedStyle(matchRoot.querySelector('.accordion__icon-status')).backgroundColor,
@@ -2215,11 +2227,14 @@ test('persisted filters prepaint before the first observer scan and settings rer
     assert.equal(rootAttributes.initialArticleDisplay, 'none');
     assert.equal(rootAttributes.initialPromoDisplay, 'none');
     assert.equal(rootAttributes.initialAdDisplay, 'none');
+    assert.equal(rootAttributes.initialAdLabelDisplay, 'none');
     assert.deepEqual(state, {
         theme: 'light',
         article: 'none',
         promo: 'none',
         ad: 'none',
+        adLabel: 'none',
+        matchCenter: 'inline',
         visibleCount: '0',
         matchHeaderBackground: 'rgb(243, 243, 239)',
         matchIconBackground: 'rgb(255, 255, 255)',

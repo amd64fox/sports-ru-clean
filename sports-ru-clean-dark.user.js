@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sports.ru Clean
 // @namespace    https://www.sports.ru/
-// @version      1.3.29
+// @version      1.3.30
 // @description  Cleaner interface for Sports.ru
 // @author       amd64fox
 // @updateURL    https://raw.githubusercontent.com/amd64fox/sports-ru-clean/main/sports-ru-clean-dark.user.js
@@ -78,6 +78,7 @@
         'div[data-control="Common.RbPromo"]',
         'div[data-control="Common.BookmakerTeaser"]',
         '.mc-layout__top-ads',
+        '.teaser-before-links__adv-label',
         '.news-page__branding',
         '.post-page__branding',
         '.ad-banner-layout',
