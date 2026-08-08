@@ -839,6 +839,7 @@ test('full userscript handles initial and dynamic DOM without self-scan loops', 
                 rootBackground: getComputedStyle(matchRoot).backgroundColor,
                 headerBackground: getComputedStyle(matchHeader).backgroundColor,
                 eventBackground: getComputedStyle(matchEvent).backgroundColor,
+                eventDividerColor: getComputedStyle(matchEvent, '::before').borderLeftColor,
                 iconBackground: getComputedStyle(matchIcon).backgroundColor,
                 iconMark: getComputedStyle(matchIcon, '::before').backgroundColor,
                 titleColor: getComputedStyle(matchTitle).color,
@@ -857,7 +858,7 @@ test('full userscript handles initial and dynamic DOM without self-scan loops', 
     const initialRoot = await getRootAttributes(page);
 
     assert.deepEqual(JSON.parse(initialRoot.errors), []);
-    assert.equal(initialRoot.styleBytes, 135095);
+    assert.equal(initialRoot.styleBytes, 135269);
     assert.equal(initialRoot.initialArticleDisplay, 'block');
     assert.equal(initialRoot.initialPromoDisplay, 'none');
     assert.equal(initialRoot.initialAdDisplay, 'none');
@@ -924,13 +925,14 @@ test('full userscript handles initial and dynamic DOM without self-scan loops', 
         },
         match: {
             rootBackground: 'rgba(0, 0, 0, 0)',
-            headerBackground: 'rgb(55, 55, 55)',
-            eventBackground: 'rgb(44, 44, 44)',
-            iconBackground: 'rgb(80, 80, 80)',
+            headerBackground: 'rgb(44, 44, 44)',
+            eventBackground: 'rgba(0, 0, 0, 0)',
+            eventDividerColor: 'rgb(55, 55, 55)',
+            iconBackground: 'rgb(55, 55, 55)',
             iconMark: 'rgb(216, 216, 216)',
             titleColor: 'rgb(216, 216, 216)',
             statusColor: 'rgb(155, 155, 155)',
-            scoreBackground: 'rgb(55, 55, 55)',
+            scoreBackground: 'rgb(44, 44, 44)',
             scoreColor: 'rgb(107, 188, 255)',
             scoreSpanColor: 'rgb(107, 188, 255)',
             playerColor: 'rgb(107, 188, 255)',
@@ -2653,6 +2655,7 @@ test('persisted filters prepaint before the first observer scan and settings rer
             matchCenter: getComputedStyle(document.querySelector('.teaser-before-links__item')).display,
             visibleCount: document.querySelector('.super-top')?.getAttribute('data-sru-clean-dark-visible-count'),
             matchHeaderBackground: getComputedStyle(matchRoot.querySelector('.teaser-group__handle')).backgroundColor,
+            matchEventDividerColor: getComputedStyle(matchRoot.querySelector('.teaser-event'), '::before').borderLeftColor,
             matchIconBackground: getComputedStyle(matchRoot.querySelector('.accordion__icon-status')).backgroundColor,
             matchScoreBackground: getComputedStyle(matchRoot.querySelector('.teaser-event__board-score')).backgroundColor,
             matchTitleColor: getComputedStyle(matchRoot.querySelector('.accordion__title > a')).color
@@ -2672,6 +2675,7 @@ test('persisted filters prepaint before the first observer scan and settings rer
         matchCenter: 'inline',
         visibleCount: '0',
         matchHeaderBackground: 'rgb(243, 243, 239)',
+        matchEventDividerColor: 'rgb(216, 216, 216)',
         matchIconBackground: 'rgb(255, 255, 255)',
         matchScoreBackground: 'rgb(243, 243, 239)',
         matchTitleColor: 'rgb(78, 78, 78)'

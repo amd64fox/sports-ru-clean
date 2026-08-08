@@ -118,7 +118,7 @@ function createCoreApi() {
 }
 
 test('metadata and persisted state key remain backward compatible', () => {
-    assert.match(source, /\/\/ @version\s+1\.3\.32/);
+    assert.match(source, /\/\/ @version\s+1\.3\.33/);
     assert.match(source, /const STORAGE_KEY = 'sports-ru-clean-dark-state-v1';/);
     assert.match(source, /version:\s*2/);
     assert.match(source, /^\/\/ @match\s+https:\/\/video\.sports\.ru\/embed\/\*$/m);
@@ -647,6 +647,6 @@ test('generated CSS is byte-for-byte identical to the audited baseline', () => {
     const css = buildStyles();
     const hash = crypto.createHash('sha256').update(css).digest('hex');
 
-    assert.equal(css.length, 135095);
-    assert.equal(hash, '845e66d513c0d561ab98f562027544bf4aa714b8ae4a115738cc58850237564d');
+    assert.equal(css.length, 135269);
+    assert.equal(hash, 'f87602beda746376b89b210f46562d4bb4bd033f775d1465095994fd1afa255b');
 });

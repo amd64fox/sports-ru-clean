@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sports.ru Clean
 // @namespace    https://www.sports.ru/
-// @version      1.3.32
+// @version      1.3.33
 // @description  Cleaner interface for Sports.ru
 // @author       amd64fox
 // @updateURL    https://raw.githubusercontent.com/amd64fox/sports-ru-clean/main/sports-ru-clean-dark.user.js
@@ -1580,19 +1580,23 @@
             }
 
             html[${THEME_ATTRIBUTE}="dark"] .main-teaser-container--common .teaser-group__handle {
-                background-color: var(--sru-surface-raised) !important;
-                color: var(--sru-text) !important;
-                border-color: var(--sru-border) !important;
-            }
-
-            html[${THEME_ATTRIBUTE}="dark"] .main-teaser-container--common .teaser-event {
                 background-color: var(--sru-surface) !important;
                 color: var(--sru-text) !important;
                 border-color: var(--sru-border) !important;
             }
 
+            html[${THEME_ATTRIBUTE}="dark"] .main-teaser-container--common .teaser-event {
+                background-color: transparent !important;
+                color: var(--sru-text) !important;
+                border-color: var(--sru-border) !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .main-teaser-container--common .teaser-event::before {
+                border-left-color: var(--sru-surface-raised) !important;
+            }
+
             html[${THEME_ATTRIBUTE}="dark"] .main-teaser-container--common .accordion__icon-status {
-                background-color: var(--sru-surface-hover) !important;
+                background-color: var(--sru-surface-raised) !important;
                 border-color: var(--sru-border) !important;
             }
 
@@ -1634,7 +1638,7 @@
             }
 
             html[${THEME_ATTRIBUTE}="dark"] .main-teaser-container--common .teaser-event__board-score {
-                background-color: var(--sru-surface-raised) !important;
+                background-color: var(--sru-surface) !important;
                 color: #6bbcff !important;
                 border-color: var(--sru-border) !important;
             }
