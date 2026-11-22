@@ -219,6 +219,16 @@
             background: #ffffff;
         }
 
+        .main-page-short-posts,
+        .main-page-short-post-card,
+        .main-page-short-post-card__read-more {
+            background-color: var(--ui-bg, #fff);
+        }
+
+        .main-page-short-post-card {
+            border: 1px solid var(--ui-tertiary-light, #eaeaea);
+        }
+
         .main-teaser-container--common .teaser-group__handle,
         .main-teaser-container--common .teaser-event__board-score {
             background: #f3f3ef;
@@ -1388,6 +1398,11 @@
         <section class="page-layout fixture-feed">
             <div class="super-top fixture-home-marker"></div>
             <main class="columns-layout__main">
+                <section class="main-page-short-posts">
+                    <article class="main-page-short-post-card">
+                        Текст поста <a class="main-page-short-post-card__read-more" href="#post">Читать полностью</a>
+                    </article>
+                </section>
                 <ul class="blog-posts-list">
                     <li class="blog-posts-list__item">
                         <span class="blog-posts-list__top">Блог <a href="/tribuna/blogs/example/">Пример блога</a></span>

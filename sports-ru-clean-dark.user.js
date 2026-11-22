@@ -13,6 +13,7 @@
 // @match        https://video.sports.ru/video/*
 // @run-at       document-start
 // @grant        GM_addStyle
+// @grant        GM_info
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_addValueChangeListener
@@ -2287,6 +2288,10 @@
                 .gadget-results__item
             ) {
                 background-color: transparent !important;
+            }
+
+            html[${THEME_ATTRIBUTE}="dark"] .main-page-short-posts {
+                --ui-bg: var(--sru-bg);
             }
 
             html[${THEME_ATTRIBUTE}="dark"] :where(
@@ -5996,7 +6001,10 @@
                 <div class="sru-clean-dark-settings-head">
                     <div>
                         <h2 class="sru-clean-dark-settings-title" id="sru-clean-dark-settings-title">Sports.ru Clean</h2>
-                        <p class="sru-clean-dark-settings-subtitle">Настройки применяются во всех вкладках</p>
+                        <p class="sru-clean-dark-settings-subtitle">
+                            Версия <span data-sru-settings-version></span> ·
+                            <a class="sru-clean-dark-settings-item-link" href="https://github.com/amd64fox/sports-ru-clean" target="_blank" rel="noopener noreferrer" aria-label="Открыть Sports.ru Clean на GitHub в новой вкладке">GitHub</a>
+                        </p>
                     </div>
                     <button type="button" class="sru-clean-dark-settings-close" data-sru-settings-action="close" aria-label="Закрыть настройки">×</button>
                 </div>
@@ -6083,6 +6091,8 @@
             </section>
         `;
 
+        const scriptVersion = typeof GM_info === 'object' && GM_info?.script?.version;
+        backdrop.querySelector('[data-sru-settings-version]').textContent = scriptVersion || 'неизвестна';
         backdrop.addEventListener('click', handleSettingsClick);
         document.body.append(backdrop);
         return backdrop;

@@ -587,7 +587,7 @@ function getSettingsRecoveryLayout(page) {
             ...section.querySelectorAll('.sru-clean-dark-settings-list-item > .sru-clean-dark-settings-button')
         ]).filter(Boolean);
         const listRows = sections.flatMap((section) => [...section.querySelectorAll('.sru-clean-dark-settings-list-item')]);
-        const links = [...document.querySelectorAll('.sru-clean-dark-settings-item-link')];
+        const links = [...content.querySelectorAll('.sru-clean-dark-settings-item-link')];
         const articleLinks = links.filter((link) => link.dataset.sruSettingsLinkKind === 'article');
         const authorLinks = links.filter((link) => link.dataset.sruSettingsLinkKind === 'author');
         const longArticle = articleLinks.find((link) => link.textContent.includes('Как Испании'));
@@ -858,7 +858,7 @@ test('full userscript handles initial and dynamic DOM without self-scan loops', 
     const initialRoot = await getRootAttributes(page);
 
     assert.deepEqual(JSON.parse(initialRoot.errors), []);
-    assert.equal(initialRoot.styleBytes, 135269);
+    assert.equal(initialRoot.styleBytes, 135400);
     assert.equal(initialRoot.initialArticleDisplay, 'block');
     assert.equal(initialRoot.initialPromoDisplay, 'none');
     assert.equal(initialRoot.initialAdDisplay, 'none');
@@ -1100,6 +1100,34 @@ test('ad-only legacy sidebar centers before the first frame while useful mounts 
     await page.close();
 });
 
+test('settings show the installed script version and keep the GitHub link in the focus trap', {
+    skip: playwrightLoadError ? `Playwright unavailable: ${playwrightLoadError.message}` : false
+}, async () => {
+    const page = await browser.newPage({ viewport: { width: 390, height: 600 } });
+    await page.addInitScript(() => {
+        window.GM_info = { version: '5.4.0', script: { version: '2.1.0-beta.3' } };
+    });
+    await page.goto(`${origin}/tests/browser-fixture.html?seed=1`);
+    const trigger = page.locator('.sru-clean-dark-settings-toggle');
+    await trigger.click();
+    const dialog = page.getByRole('dialog', { name: 'Sports.ru Clean' });
+    assert.equal(await dialog.locator('[data-sru-settings-version]').textContent(), '2.1.0-beta.3');
+    const link = dialog.getByRole('link', { name: /GitHub/ });
+    assert.equal(await link.getAttribute('href'), 'https://github.com/amd64fox/sports-ru-clean');
+    assert.equal(await link.getAttribute('target'), '_blank');
+    assert.equal(await link.getAttribute('rel'), 'noopener noreferrer');
+
+    await dialog.getByRole('button', { name: 'Закрыть настройки' }).press('Shift+Tab');
+    assert.ok(await link.evaluate(el => el === document.activeElement));
+    await page.keyboard.press('Shift+Tab');
+    assert.ok(await dialog.getByRole('button', { name: 'Сбросить настройки' }).evaluate(el => el === document.activeElement));
+    await page.keyboard.press('Tab');
+    assert.ok(await link.evaluate(el => el === document.activeElement));
+    await page.keyboard.press('Escape');
+    assert.ok(await trigger.evaluate(el => el === document.activeElement));
+    await page.close();
+});
+
 test('settings recovery lists keep one action column and expose safe links', {
     skip: playwrightLoadError ? `Playwright unavailable: ${playwrightLoadError.message}` : false
 }, async () => {
@@ -1192,6 +1220,30 @@ test('statistics accordion handles retain native light colors', {
         });
     }
     assert.deepEqual(JSON.parse((await getRootAttributes(page)).errors), []);
+    await page.close();
+});
+
+test('homepage short posts blend into the feed and retain their card borders', {
+    skip: playwrightLoadError ? `Playwright unavailable: ${playwrightLoadError.message}` : false
+}, async () => {
+    const page = await browser.newPage();
+    for (const [theme, background, border] of [
+        ['light', 'rgb(255, 255, 255)', 'rgb(234, 234, 234)'],
+        ['dark', 'rgb(34, 34, 34)', 'rgb(80, 80, 80)']
+    ]) {
+        await page.goto(`${origin}/tests/browser-fixture.html?seed=1&theme=${theme}`);
+        const styles = await page.locator('.main-page-short-posts').evaluate(section => {
+            const card = getComputedStyle(section.querySelector('.main-page-short-post-card'));
+            const readMore = getComputedStyle(section.querySelector('.main-page-short-post-card__read-more'));
+            return {
+                section: getComputedStyle(section).backgroundColor,
+                card: card.backgroundColor,
+                readMore: readMore.backgroundColor,
+                border: card.borderTopColor
+            };
+        });
+        assert.deepEqual(styles, { section: background, card: background, readMore: background, border }, theme);
+    }
     await page.close();
 });
 

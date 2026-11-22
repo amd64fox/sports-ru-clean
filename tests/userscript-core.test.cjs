@@ -647,6 +647,6 @@ test('generated CSS is byte-for-byte identical to the audited baseline', () => {
     const css = buildStyles();
     const hash = crypto.createHash('sha256').update(css).digest('hex');
 
-    assert.equal(css.length, 135269);
-    assert.equal(hash, 'f87602beda746376b89b210f46562d4bb4bd033f775d1465095994fd1afa255b');
+    assert.equal(css.length, 135400);
+    assert.equal(hash, '2967c88a00e34d44060d3aa5d643c5da550e7b3ee3d38305e0b5d464d284377f');
 });
